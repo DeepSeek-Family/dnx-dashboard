@@ -1,0 +1,52 @@
+import { dnxApi } from '../dnxApi'
+
+/** Single-user payload from `GET /user-management/user/:id` */
+export type ManagedUserProfile = {
+  name: string
+  email: string
+  profile: string
+  gender: string
+  age: number
+  weight: number
+  createdAt: string
+  verified: boolean
+  role: string
+  nickName: string
+  isBanned: boolean
+  isDeleted: boolean
+  isResetPassword: boolean
+  oneTimeCode: number
+  expireAt: string
+}
+
+type SingleUserApiResponse = {
+  success?: boolean
+  statusCode?: number
+  message?: string
+  data: ManagedUserProfile
+}
+
+export const userManagementApi = dnxApi.injectEndpoints({
+  endpoints: (build) => ({
+    getUserManagement: build.query({
+      query: (params) => ({
+        url: '/user-management/all-users',
+        method: 'GET',
+        params,
+      }),
+      providesTags: ['Users'],
+    }),
+
+    getSingleUser: build.query<ManagedUserProfile, string>({
+      query: (id) => ({
+        url: `/user-management/user/${id}`,
+        method: 'GET',
+      }),
+      transformResponse: (response: SingleUserApiResponse) => response.data,
+      providesTags: (_result, _error, id) => [{ type: 'Users', id }],
+    }),
+  }),
+})
+
+export const { useGetUserManagementQuery, useGetSingleUserQuery } =
+  userManagementApi

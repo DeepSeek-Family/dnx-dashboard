@@ -1,0 +1,60 @@
+@import 'tailwindcss';
+
+@theme inline {
+  --color-dnx-bg: #050816;
+  --color-dnx-surface: #0e1120;
+  --color-dnx-card: #131726;
+  --color-dnx-border: #2b3048;
+  --color-dnx-yellow: #ffd600;
+  --color-dnx-success: #00e38c;
+  --color-dnx-danger: #ff4d5e;
+  --color-dnx-warning: #ffb800;
+  --color-dnx-text: #ffffff;
+  --color-dnx-muted: #8b91a8;
+  --font-sans: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    @apply antialiased;
+  }
+
+  body {
+    @apply m-0 min-h-svh bg-dnx-bg text-dnx-text font-sans;
+    background-image:
+      radial-gradient(ellipse 120% 80% at 50% -20%, rgba(255, 214, 0, 0.12), transparent),
+      radial-gradient(ellipse 60% 40% at 100% 0%, rgba(0, 227, 140, 0.06), transparent);
+  }
+
+  #root {
+    @apply min-h-svh;
+  }
+}
+
+@layer utilities {
+  .glass-card {
+    background: rgba(19, 23, 38, 0.72);
+    border: 1px solid rgba(43, 48, 72, 0.9);
+    box-shadow:
+      0 0 0 1px rgba(255, 214, 0, 0.04),
+      0 20px 50px rgba(5, 8, 22, 0.55),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  .glow-yellow {
+    box-shadow: 0 0 32px rgba(255, 214, 0, 0.12);
+  }
+
+  .uppercase-tracking {
+    @apply uppercase tracking-[0.2em];
+  }
+
+  .text-gradient-gold {
+    background: linear-gradient(135deg, #fffef0 0%, #ffd600 45%, #c9a000 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
