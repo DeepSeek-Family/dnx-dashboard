@@ -45,8 +45,18 @@ export const userManagementApi = dnxApi.injectEndpoints({
       transformResponse: (response: SingleUserApiResponse) => response.data,
       providesTags: (_result, _error, id) => [{ type: 'Users', id }],
     }),
+    banUser: build.mutation({
+      query: ({ id, isBanned }: { id: string; isBanned: boolean }) => ({
+        url: `/user-management/user/${id}/ban`,
+        method: 'PATCH',
+        body: {
+          isBanned,
+        },
+      }),
+      invalidatesTags: ['Users'],
+    }),
   }),
 })
 
-export const { useGetUserManagementQuery, useGetSingleUserQuery } =
+export const { useGetUserManagementQuery, useGetSingleUserQuery, useBanUserMutation } =
   userManagementApi

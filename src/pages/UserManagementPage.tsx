@@ -1,7 +1,6 @@
 import {
   EyeOutlined,
   StopOutlined,
-  UserDeleteOutlined,
 } from '@ant-design/icons'
 import {
   Button,
@@ -11,21 +10,38 @@ import {
   Tag,
   Typography,
 } from 'antd'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import toast from 'react-hot-toast'
 import { Link } from 'react-router-dom'
 
 import { ROUTES } from '@/constants/routes'
-import { useGetUserManagementQuery } from '@/store/api/dashboardOverViewPage/userManagement'
+import { useBanUserMutation, useGetUserManagementQuery, } from '@/store/api/dashboardOverViewPage/userManagement'
+import { debounce } from '@/utils/debounce'
+
+const SEARCH_DEBOUNCE_MS = 300
 
 export default function UserManagementPage() {
-  const [search, setSearch] = useState('')
+  const [searchInput, setSearchInput] = useState('')
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('')
   const [verifiedFilter, setVerifiedFilter] = useState<string | null>(null)
+  const [banUser] = useBanUserMutation()
 
-  const { data: userManagement, isLoading } =
+  const scheduleDebouncedSearch = useMemo(
+    () => debounce((value: string) => setDebouncedSearchTerm(value), SEARCH_DEBOUNCE_MS),
+    [],
+  )
+
+  useEffect(() => {
+    scheduleDebouncedSearch(searchInput)
+  }, [searchInput, scheduleDebouncedSearch])
+
+  useEffect(() => () => scheduleDebouncedSearch.cancel(), [scheduleDebouncedSearch])
+
+  const { data: userManagement, isLoading, refetch } =
     useGetUserManagementQuery({
       page: 1,
       limit: 10,
-      searchTerm: search,
+      searchTerm: debouncedSearchTerm,
     })
 
   const userManagementData = userManagement?.data ?? []
@@ -33,10 +49,10 @@ export default function UserManagementPage() {
   const filteredData = useMemo(() => {
     return userManagementData.filter((user: any) => {
       const matchesSearch =
-        !search ||
+        !searchInput ||
         `${user.name} ${user.email} ${user.nickName}`
           .toLowerCase()
-          .includes(search.toLowerCase())
+          .includes(searchInput.toLowerCase())
 
       const matchesVerified =
         !verifiedFilter ||
@@ -45,7 +61,17 @@ export default function UserManagementPage() {
 
       return matchesSearch && matchesVerified
     })
-  }, [search, verifiedFilter, userManagementData])
+  }, [searchInput, verifiedFilter, userManagementData])
+
+
+  const handleBanUser = async (id: string, isBanned: boolean) => {
+    await banUser({ id, isBanned }).unwrap().then(() => {
+      toast.success(isBanned ? 'User banned' : 'User unbanned')
+      refetch()
+    }).catch((err) => {
+      toast.error((err as { data?: { message?: string } })?.data?.message ?? 'Could not update ban status')
+    })
+  }
 
   return (
     <div className="space-y-6">
@@ -73,8 +99,8 @@ export default function UserManagementPage() {
           allowClear
           placeholder="Search users"
           className="min-w-[220px] flex-1"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
         />
 
         <Select
@@ -192,14 +218,13 @@ export default function UserManagementPage() {
 
                 <Button
                   size="small"
+                  danger={row.isBanned}
                   icon={<StopOutlined />}
-                />
+                  onClick={() => handleBanUser(row.id, !row.isBanned)}
+                >
+                  {row.isBanned ? 'Unban' : 'Ban'}
+                </Button>
 
-                <Button
-                  danger
-                  size="small"
-                  icon={<UserDeleteOutlined />}
-                />
               </div>
             ),
           },

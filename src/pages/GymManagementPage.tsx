@@ -4,356 +4,355 @@ import {
   DeleteOutlined,
   EditOutlined,
   PlusOutlined,
-  SearchOutlined,
-  ShopOutlined,
 } from '@ant-design/icons'
-import { App, Button, Form, Input, Modal, Select, Switch, Table, Tag, Typography } from 'antd'
-import type { ColumnsType } from 'antd/es/table'
-import { motion } from 'framer-motion'
+
+import {
+  App,
+  Button,
+  Form,
+  Input,
+  Modal,
+  Table,
+  Tag,
+  Typography,
+} from 'antd'
+
 import { useMemo, useState } from 'react'
 
-type GymStatus = 'Active' | 'Pending' | 'Rejected'
-
-interface GymRow {
-  id: number
-  name: string
-  city: string
-  state: string
-  status: GymStatus
-  createdAt: string
-}
-
-const INITIAL_GYMS: GymRow[] = [
-  {
-    id: 1,
-    name: 'Form Studio',
-    city: 'Queretaro',
-    state: 'Queretaro',
-    status: 'Active',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 2,
-    name: 'Design Lab',
-    city: 'Guadalajara',
-    state: 'Jalisco',
-    status: 'Pending',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 3,
-    name: 'Pixel Forge',
-    city: 'Monterrey',
-    state: 'Nuevo Leon',
-    status: 'Rejected',
-    createdAt: new Date().toISOString(),
-  },
-]
-
-const CITY_FILTERS = ['All', 'Mexico City', 'Guadalajara', 'Monterrey', 'Queretaro'] as const
-const STATUS_FILTERS: GymStatus[] = ['Active', 'Pending', 'Rejected']
+import {
+  useAddGymMutation,
+  useDeleteGymMutation,
+  useGetGymsQuery,
+  useUpdateGymMutation,
+} from '@/store/api/dashboardOverViewPage/gym.api'
 
 export default function GymManagementPage() {
   const { message } = App.useApp()
-  const [gyms, setGyms] = useState<GymRow[]>(INITIAL_GYMS)
-  const [search, setSearch] = useState('')
-  const [cityFilter, setCityFilter] = useState<(typeof CITY_FILTERS)[number]>('All')
-  const [statusFilter, setStatusFilter] = useState<GymStatus | 'All'>('All')
-  const [pendingOnly, setPendingOnly] = useState(false)
 
-  const [modalOpen, setModalOpen] = useState(false)
-  const [editingGym, setEditingGym] = useState<GymRow | null>(null)
+  const [search, setSearch] = useState('')
+  const [open, setOpen] = useState(false)
+  const [editingGym, setEditingGym] = useState<any>(null)
+
   const [form] = Form.useForm()
 
-  const openAddModal = () => {
-    setEditingGym(null)
-    form.resetFields()
-    setModalOpen(true)
-  }
+  const { data: gymsResponse, isLoading, refetch } =
+    useGetGymsQuery({})
 
-  const openEditModal = (gym: GymRow) => {
-    setEditingGym(gym)
-    form.setFieldsValue({
-      gymName: gym.name,
-      city: gym.city,
-      state: gym.state,
-    })
-    setModalOpen(true)
-  }
+  const [addGym, { isLoading: addingGym }] =
+    useAddGymMutation()
 
-  const closeModal = () => {
-    setModalOpen(false)
-    setEditingGym(null)
-    form.resetFields()
-  }
+  const [updateGym, { isLoading: updatingGym }] =
+    useUpdateGymMutation()
 
-  const handleAddOrEditGym = async () => {
-    const values = await form.validateFields()
-    const name = values.gymName as string
-    const city = values.city as string
-    const state = (values.state as string) || city
+  const [deleteGym] = useDeleteGymMutation()
 
-    if (editingGym) {
-      setGyms((prev) =>
-        prev.map((g) => (g.id === editingGym.id ? { ...g, name, city, state } : g)),
-      )
-      message.success('Gym updated.')
-    } else {
-      const newGym: GymRow = {
-        id: Date.now(),
-        name,
-        city,
-        state,
-        status: 'Pending',
-        createdAt: new Date().toISOString(),
-      }
-      setGyms((prev) => [newGym, ...prev])
-      message.success('Gym successfully added to DNX.')
-    }
-    closeModal()
-  }
+  const [statusAction, setStatusAction] = useState<{
+    id: string
+    kind: 'accept' | 'reject'
+  } | null>(null)
 
-  const updateStatus = (id: number, status: GymStatus) => {
-    setGyms((prev) => prev.map((g) => (g.id === id ? { ...g, status } : g)))
-    message.success(`Status updated to ${status}.`)
-  }
-
-  const deleteGym = (gym: GymRow) => {
-    Modal.confirm({
-      title: 'Delete gym?',
-      content: `Are you sure you want to delete ${gym.name}?`,
-      okButtonProps: { danger: true },
-      okText: 'Delete',
-      onOk: () => {
-        setGyms((prev) => prev.filter((g) => g.id !== gym.id))
-        message.success('Gym deleted.')
-      },
-    })
-  }
+  const gyms = gymsResponse?.data ?? []
+  console.log("Totla gym", gyms)
 
   const filteredGyms = useMemo(() => {
-    return gyms.filter((g) => {
-      const text = `${g.name} ${g.city} ${g.state}`.toLowerCase()
-      const q = search.trim().toLowerCase()
-      const matchSearch = !q || text.includes(q)
-
-      const matchCity =
-        cityFilter === 'All' ||
-        g.city.toLowerCase() === cityFilter.toLowerCase() ||
-        g.state.toLowerCase() === cityFilter.toLowerCase()
-
-      const matchStatus =
-        statusFilter === 'All' ? true : g.status.toLowerCase() === statusFilter.toLowerCase()
-
-      const matchPending = !pendingOnly || g.status === 'Pending'
-
-      return matchSearch && matchCity && matchStatus && matchPending
+    return gyms.filter((gym: any) => {
+      return `${gym.gymName} ${gym.city}`
+        .toLowerCase()
+        .includes(search.toLowerCase())
     })
-  }, [gyms, search, cityFilter, statusFilter, pendingOnly])
+  }, [gyms, search])
 
-  const statusTag = (status: GymStatus) => {
-    const color =
-      status === 'Active' ? '#00E38C' : status === 'Pending' ? '#FFD600' : '#FF4D5E'
-    const bg =
-      status === 'Active'
-        ? 'bg-emerald-500/10'
-        : status === 'Pending'
-          ? 'bg-yellow-500/10'
-          : 'bg-red-500/10'
-    return (
-      <Tag
-        style={{ borderColor: color, color }}
-        className={`${bg} rounded-full px-3 py-1 text-xs font-semibold shadow-[0_0_12px_rgba(0,0,0,0.4)]`}
-      >
-        {status}
-      </Tag>
-    )
+  const handleOpenAddModal = () => {
+    setEditingGym(null)
+    form.resetFields()
+    setOpen(true)
   }
 
-  const columns: ColumnsType<GymRow> = [
-    {
-      title: 'Gym',
-      dataIndex: 'name',
-      render: (_: unknown, row) => (
-        <div className="flex items-center gap-3">
-          <div className="flex size-9 items-center justify-center rounded-xl border border-dnx-border bg-dnx-card text-dnx-yellow">
-            <ShopOutlined />
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-white">{row.name}</p>
-            <p className="mt-0.5 text-xs text-dnx-muted">
-              {row.city} ? {row.state}
-            </p>
-          </div>
-        </div>
-      ),
-    },
-    { title: 'City', dataIndex: 'city' },
-    { title: 'State', dataIndex: 'state' },
-    {
-      title: 'Status',
-      dataIndex: 'status',
-      render: (status: GymStatus) => statusTag(status),
-    },
-    {
-      title: 'Created Date',
-      dataIndex: 'createdAt',
-      render: (v: string) => new Date(v).toLocaleString(),
-    },
-    {
-      title: 'Actions',
-      render: (_: unknown, row) => (
-        <div className="flex flex-wrap gap-2">
-          {row.status === 'Pending' && (
-            <>
-              <Button
-                size="small"
-                icon={<CheckOutlined />}
-                className="rounded-full border-0 bg-dnx-success/20 text-dnx-success hover:bg-dnx-success/30"
-                onClick={() => updateStatus(row.id, 'Active')}
-              >
-                Accept
-              </Button>
-              <Button
-                size="small"
-                icon={<CloseOutlined />}
-                className="rounded-full border border-dnx-border bg-transparent text-dnx-danger hover:border-dnx-danger"
-                onClick={() => updateStatus(row.id, 'Rejected')}
-              >
-                Reject
-              </Button>
-            </>
-          )}
-          <Button
-            size="small"
-            icon={<EditOutlined />}
-            className="rounded-full border-dnx-border bg-dnx-surface text-dnx-muted hover:text-white"
-            onClick={() => openEditModal(row)}
-          />
-          <Button
-            size="small"
-            icon={<DeleteOutlined />}
-            danger
-            className="rounded-full"
-            onClick={() => deleteGym(row)}
-          />
-        </div>
-      ),
-    },
-  ]
+  const handleEdit = (gym: any) => {
+    setEditingGym(gym)
+
+    form.setFieldsValue({
+      gymName: gym.gymName,
+      city: gym.city,
+    })
+
+    setOpen(true)
+  }
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteGym(id).unwrap()
+
+      message.success('Gym deleted successfully')
+    } catch (error: any) {
+      message.error(
+        error?.data?.message ||
+        'Failed to delete gym',
+      )
+    }
+  }
+
+  const isPendingGym = (gym: any) =>
+    String(gym?.status ?? '').toUpperCase() === 'PENDING'
+
+  const handleGymStatus = async (
+    gym: any,
+    status: 'ACCEPTED' | 'REJECTED',
+  ) => {
+    try {
+      setStatusAction({
+        id: gym.id,
+        kind: status === 'ACCEPTED' ? 'accept' : 'reject',
+      })
+      await updateGym({
+        id: gym.id,
+        gymName: gym.gymName,
+        city: gym.city,
+        status,
+      }).unwrap()
+      await refetch()
+      message.success(
+        status === 'ACCEPTED'
+          ? 'Gym accepted'
+          : 'Gym rejected',
+      )
+    } catch (error: any) {
+      message.error(
+        error?.data?.message ||
+        'Failed to update gym status',
+      )
+    } finally {
+      setStatusAction(null)
+    }
+  }
+
+  const handleSubmit = async () => {
+    try {
+      const values = await form.validateFields()
+
+      if (editingGym) {
+        await updateGym({
+          id: editingGym.id,
+
+          ...values,
+        }).unwrap()
+
+        message.success(
+          'Gym updated successfully',
+        )
+      } else {
+        await addGym({ ...values, status: "ACCEPTED" }).unwrap()
+        await refetch()
+        message.success(
+          'Gym added successfully',
+        )
+      }
+
+      setOpen(false)
+      form.resetFields()
+    } catch (error: any) {
+      message.error(
+        error?.data?.message ||
+        'Something went wrong',
+      )
+    }
+  }
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="flex items-center justify-between">
         <div>
-          <Typography.Text className="text-[11px] uppercase-tracking text-dnx-muted">
+          <Typography.Text className="text-[11px] uppercase tracking-[0.2em] text-dnx-muted">
             Gym management
           </Typography.Text>
-          <Typography.Title level={2} className="!mb-1 !mt-2 !text-white">
-            Studios and federation nodes
+
+          <Typography.Title
+            level={2}
+            className="!mb-1 !mt-2 !text-white"
+          >
+            Manage gyms
           </Typography.Title>
+
           <Typography.Paragraph className="!mb-0 !text-dnx-muted">
-            Manage and monitor all gym nodes in DNX.
+            Add, edit and delete gyms.
           </Typography.Paragraph>
         </div>
+
         <Button
           type="primary"
-          size="large"
           icon={<PlusOutlined />}
-          className="rounded-[14px] !bg-dnx-yellow !text-black !font-semibold transition hover:!bg-[#ffe24d] hover:shadow-[0_0_20px_rgba(255,214,0,0.35)]"
-          onClick={openAddModal}
+          onClick={handleOpenAddModal}
         >
           Add Gym
         </Button>
       </div>
 
-      {/* Search & Filters */}
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="glass-card flex flex-wrap items-center gap-3 rounded-[20px] border border-dnx-border/80 p-4"
-      >
-        <Input
+      {/* Search */}
+      <div className="glass-card rounded-[20px] border border-dnx-border/80 p-4">
+        <Input.Search
+          allowClear
+          placeholder="Search gym"
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search gym, city, or state..."
-          prefix={<SearchOutlined className="text-dnx-muted" />}
-          className="h-11 min-w-[220px] flex-1 rounded-[14px]"
+          onChange={(e) =>
+            setSearch(e.target.value)
+          }
         />
-        <Select
-          value={cityFilter}
-          onChange={setCityFilter}
-          className="min-w-[180px]"
-          options={CITY_FILTERS.map((c) => ({ label: c, value: c }))}
-        />
-        <Select
-          value={statusFilter}
-          onChange={(v) => setStatusFilter(v as GymStatus | 'All')}
-          className="min-w-[160px]"
-          options={[{ label: 'All', value: 'All' }, ...STATUS_FILTERS.map((s) => ({ label: s, value: s }))]}
-        />
-        <div className="flex items-center gap-2">
-          <Switch checked={pendingOnly} onChange={setPendingOnly} />
-          <span className="text-xs text-dnx-muted">Pending only</span>
-        </div>
-      </motion.div>
+      </div>
 
-      {/* Gym Table */}
-      <motion.section
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.05 }}
-        className="glass-card rounded-[24px] border border-dnx-border/80 p-5"
-      >
-        <Table<GymRow>
-          rowKey="id"
-          dataSource={filteredGyms}
-          columns={columns}
-          pagination={{ pageSize: 8 }}
-          className="[&_.ant-table]:!bg-transparent [&_.ant-table-tbody>tr>td]:!border-b-dnx-border/40 [&_.ant-table-tbody>tr:hover>td]:!bg-dnx-yellow/5 rounded-2xl overflow-hidden"
-        />
-      </motion.section>
+      {/* Table */}
+      <Table
+        rowKey="id"
+        loading={isLoading}
+        dataSource={filteredGyms}
+        pagination={{
+          pageSize: 10,
+        }}
+        className="[&_.ant-table]:!bg-transparent"
+        columns={[
+          {
+            title: 'Gym Name',
+            dataIndex: 'gymName',
+          },
 
-      {/* Add / Edit Gym Modal */}
+          {
+            title: 'City',
+            dataIndex: 'city',
+          },
+
+          {
+            title: 'Status',
+            dataIndex: 'status',
+            render: (status: string) => {
+              const s = String(status ?? '').toUpperCase()
+              const color =
+                s === 'ACCEPTED'
+                  ? 'success'
+                  : s === 'REJECTED'
+                    ? 'error'
+                    : s === 'PENDING'
+                      ? 'warning'
+                      : 'default'
+              return (
+                <Tag color={color}>
+                  {status ?? '—'}
+                </Tag>
+              )
+            },
+          },
+
+          {
+            title: 'Created At',
+            dataIndex: 'createdAt',
+            render: (date: string) =>
+              new Date(
+                date,
+              ).toLocaleDateString(),
+          },
+
+          {
+            title: 'Actions',
+            render: (_: any, row: any) => (
+              <div className="flex flex-wrap items-center gap-2">
+                {isPendingGym(row) ? (
+                  <>
+                    <Button
+                      type="primary"
+                      icon={<CheckOutlined />}
+                      loading={
+                        statusAction?.id === row.id &&
+                        statusAction.kind === 'accept'
+                      }
+                      disabled={statusAction !== null}
+                      onClick={() =>
+                        handleGymStatus(row, 'ACCEPTED')
+                      }
+                    >
+                      Accept
+                    </Button>
+                    <Button
+                      danger
+                      icon={<CloseOutlined />}
+                      loading={
+                        statusAction?.id === row.id &&
+                        statusAction.kind === 'reject'
+                      }
+                      disabled={statusAction !== null}
+                      onClick={() =>
+                        handleGymStatus(row, 'REJECTED')
+                      }
+                    >
+                      Reject
+                    </Button>
+                  </>
+                ) : null}
+                <Button
+                  icon={<EditOutlined />}
+                  onClick={() =>
+                    handleEdit(row)
+                  }
+                />
+
+                <Button
+                  danger
+                  icon={<DeleteOutlined />}
+                  onClick={() =>
+                    handleDelete(row.id)
+                  }
+                />
+              </div>
+            ),
+          },
+        ]}
+      />
+
+      {/* Modal */}
       <Modal
-        open={modalOpen}
-        onCancel={closeModal}
-        onOk={handleAddOrEditGym}
-        title={
-          <div>
-            <p className="text-sm font-semibold text-white">Add New Gym</p>
-            <p className="mt-1 text-xs text-dnx-muted">
-              Create and instantly register a new gym node in DNX.
-            </p>
-          </div>
+        open={open}
+        onCancel={() => setOpen(false)}
+        onOk={handleSubmit}
+        confirmLoading={
+          addingGym || updatingGym
         }
-        okText={editingGym ? 'Save Gym' : 'Add Gym'}
-        cancelText="Cancel"
-        className="[&_.ant-modal-content]:rounded-[24px] [&_.ant-modal-content]:border [&_.ant-modal-content]:border-dnx-border [&_.ant-modal-content]:bg-dnx-card/95 [&_.ant-modal-content]:backdrop-blur-xl"
-        width={640}
+        title={
+          editingGym
+            ? 'Update Gym'
+            : 'Add Gym'
+        }
       >
-        <Form form={form} layout="vertical" requiredMark={false}>
+        <Form
+          form={form}
+          layout="vertical"
+        >
           <Form.Item
             name="gymName"
-            label={<span className="text-dnx-muted">Gym Name</span>}
-            rules={[{ required: true, message: 'Gym Name is required' }]}
+            label="Gym Name"
+            rules={[
+              {
+                required: true,
+                message:
+                  'Gym Name is required',
+              },
+            ]}
           >
-            <Input size="large" className="!rounded-2xl" />
+            <Input />
           </Form.Item>
+
           <Form.Item
             name="city"
-            label={<span className="text-dnx-muted">City</span>}
-            rules={[{ required: true, message: 'City is required' }]}
+            label="City"
+            rules={[
+              {
+                required: true,
+                message:
+                  'City is required',
+              },
+            ]}
           >
-            <Input size="large" className="!rounded-2xl" />
-          </Form.Item>
-          <Form.Item name="state" label={<span className="text-dnx-muted">State (optional)</span>}>
-            <Input size="large" className="!rounded-2xl" />
+            <Input />
           </Form.Item>
         </Form>
       </Modal>
     </div>
   )
 }
-
