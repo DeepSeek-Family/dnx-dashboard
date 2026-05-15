@@ -13,7 +13,7 @@ const gymApi = dnxApi.injectEndpoints({
         }),
         updateGym: build.mutation({
             query: (gym) => ({
-                url: '/gym-management/update/${gym.id}',
+                url: `/gym-management/update/${gym.id}`,
                 method: 'PATCH',
                 body: gym,
             }),

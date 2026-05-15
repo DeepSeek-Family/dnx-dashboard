@@ -12,6 +12,7 @@ import {
   Form,
   Input,
   Modal,
+  Select,
   Table,
   Tag,
   Typography,
@@ -26,40 +27,51 @@ import {
   useUpdateGymMutation,
 } from '@/store/api/dashboardOverViewPage/gym.api'
 
+import type { IGym } from '@/types/gymTypes'
+
 export default function GymManagementPage() {
   const { message } = App.useApp()
 
   const [search, setSearch] = useState('')
   const [open, setOpen] = useState(false)
-  const [editingGym, setEditingGym] = useState<any>(null)
+  const [editingGym, setEditingGym] =
+    useState<IGym | null>(null)
 
   const [form] = Form.useForm()
 
-  const { data: gymsResponse, isLoading, refetch } =
-    useGetGymsQuery({})
+  const {
+    data: gymsResponse,
+    isLoading,
+    refetch,
+  } = useGetGymsQuery({})
 
   const [addGym, { isLoading: addingGym }] =
     useAddGymMutation()
 
-  const [updateGym, { isLoading: updatingGym }] =
-    useUpdateGymMutation()
+  const [
+    updateGym,
+    { isLoading: updatingGym },
+  ] = useUpdateGymMutation()
 
-  const [deleteGym] = useDeleteGymMutation()
+  const [deleteGym] =
+    useDeleteGymMutation()
 
-  const [statusAction, setStatusAction] = useState<{
+  const [
+    statusAction,
+    setStatusAction,
+  ] = useState<{
     id: string
     kind: 'accept' | 'reject'
   } | null>(null)
 
   const gyms = gymsResponse?.data ?? []
-  console.log("Totla gym", gyms)
 
   const filteredGyms = useMemo(() => {
-    return gyms.filter((gym: any) => {
-      return `${gym.gymName} ${gym.city}`
+    return gyms.filter((gym: IGym) =>
+      `${gym.gymName} ${gym.city}`
         .toLowerCase()
         .includes(search.toLowerCase())
-    })
+    )
   }, [gyms, search])
 
   const handleOpenAddModal = () => {
@@ -68,99 +80,100 @@ export default function GymManagementPage() {
     setOpen(true)
   }
 
-  const handleEdit = (gym: any) => {
-    setEditingGym(gym)
+  const handleEdit = (payload: IGym) => {
+    setEditingGym(payload)
 
     form.setFieldsValue({
-      gymName: gym.gymName,
-      city: gym.city,
+      gymName: payload.gymName,
+      city: payload.city,
+      status: payload.status,
     })
 
     setOpen(true)
   }
 
-  const handleDelete = async (id: string) => {
-    try {
-      await deleteGym(id).unwrap()
-
-      message.success('Gym deleted successfully')
-    } catch (error: any) {
-      message.error(
-        error?.data?.message ||
-        'Failed to delete gym',
-      )
-    }
+  const handleDelete = async (
+    payload: Partial<IGym>
+  ) => {
+    await deleteGym(payload.id!)
+      .unwrap()
+      .then(() => {
+        message.success(
+          'Gym deleted successfully'
+        )
+        refetch()
+      })
+      .catch((error: any) => {
+        message.error(
+          error?.data?.message ||
+          'Failed to delete gym'
+        )
+      })
   }
 
-  const isPendingGym = (gym: any) =>
-    String(gym?.status ?? '').toUpperCase() === 'PENDING'
+  const isPendingGym = (
+    gym: IGym
+  ) =>
+    String(
+      gym?.status ?? ''
+    ).toUpperCase() === 'PENDING'
 
   const handleGymStatus = async (
-    gym: any,
-    status: 'ACCEPTED' | 'REJECTED',
+    id: string,
+    status:
+      | 'ACCEPTED'
+      | 'REJECTED'
   ) => {
     try {
       setStatusAction({
-        id: gym.id,
-        kind: status === 'ACCEPTED' ? 'accept' : 'reject',
+        id,
+        kind:
+          status === 'ACCEPTED'
+            ? 'accept'
+            : 'reject',
       })
+
       await updateGym({
-        id: gym.id,
-        gymName: gym.gymName,
-        city: gym.city,
+        id,
         status,
       }).unwrap()
-      await refetch()
+
       message.success(
-        status === 'ACCEPTED'
-          ? 'Gym accepted'
-          : 'Gym rejected',
+        'Gym status updated successfully'
       )
+
+      await refetch()
     } catch (error: any) {
       message.error(
         error?.data?.message ||
-        'Failed to update gym status',
+        'Failed to update gym status'
       )
     } finally {
       setStatusAction(null)
     }
   }
 
-  const handleSubmit = async () => {
-    try {
-      const values = await form.validateFields()
-
-      if (editingGym) {
-        await updateGym({
-          id: editingGym.id,
-
-          ...values,
-        }).unwrap()
-
+  const handleSubmit = async (
+    payload: IGym
+  ) => {
+    await addGym(payload)
+      .unwrap()
+      .then(() => {
         message.success(
-          'Gym updated successfully',
+          'Gym added successfully'
         )
-      } else {
-        await addGym({ ...values, status: "ACCEPTED" }).unwrap()
-        await refetch()
-        message.success(
-          'Gym added successfully',
+        refetch()
+      })
+      .catch((error: any) => {
+        message.error(
+          error?.data?.message ||
+          'Failed to add gym'
         )
-      }
-
-      setOpen(false)
-      form.resetFields()
-    } catch (error: any) {
-      message.error(
-        error?.data?.message ||
-        'Something went wrong',
-      )
-    }
+      })
   }
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <Typography.Text className="text-[11px] uppercase tracking-[0.2em] text-dnx-muted">
@@ -182,25 +195,27 @@ export default function GymManagementPage() {
         <Button
           type="primary"
           icon={<PlusOutlined />}
-          onClick={handleOpenAddModal}
+          onClick={
+            handleOpenAddModal
+          }
         >
           Add Gym
         </Button>
       </div>
 
-      {/* Search */}
       <div className="glass-card rounded-[20px] border border-dnx-border/80 p-4">
         <Input.Search
           allowClear
           placeholder="Search gym"
           value={search}
           onChange={(e) =>
-            setSearch(e.target.value)
+            setSearch(
+              e.target.value
+            )
           }
         />
       </div>
 
-      {/* Table */}
       <Table
         rowKey="id"
         loading={isLoading}
@@ -223,81 +238,133 @@ export default function GymManagementPage() {
           {
             title: 'Status',
             dataIndex: 'status',
-            render: (status: string) => {
-              const s = String(status ?? '').toUpperCase()
+            render: (
+              status: string
+            ) => {
+              const s = String(
+                status ?? ''
+              ).toUpperCase()
+
               const color =
-                s === 'ACCEPTED'
+                s ===
+                  'ACCEPTED'
                   ? 'success'
-                  : s === 'REJECTED'
+                  : s ===
+                    'REJECTED'
                     ? 'error'
-                    : s === 'PENDING'
+                    : s ===
+                      'PENDING'
                       ? 'warning'
                       : 'default'
+
               return (
-                <Tag color={color}>
-                  {status ?? '—'}
+                <Tag
+                  color={color}
+                >
+                  {status ??
+                    '—'}
                 </Tag>
               )
             },
           },
 
           {
-            title: 'Created At',
-            dataIndex: 'createdAt',
-            render: (date: string) =>
+            title:
+              'Created At',
+            dataIndex:
+              'createdAt',
+            render: (
+              date: string
+            ) =>
               new Date(
-                date,
+                date
               ).toLocaleDateString(),
           },
 
           {
-            title: 'Actions',
-            render: (_: any, row: any) => (
+            title:
+              'Actions',
+            render: (
+              _: unknown,
+              row: IGym
+            ) => (
               <div className="flex flex-wrap items-center gap-2">
-                {isPendingGym(row) ? (
-                  <>
-                    <Button
-                      type="primary"
-                      icon={<CheckOutlined />}
-                      loading={
-                        statusAction?.id === row.id &&
-                        statusAction.kind === 'accept'
-                      }
-                      disabled={statusAction !== null}
-                      onClick={() =>
-                        handleGymStatus(row, 'ACCEPTED')
-                      }
-                    >
-                      Accept
-                    </Button>
-                    <Button
-                      danger
-                      icon={<CloseOutlined />}
-                      loading={
-                        statusAction?.id === row.id &&
-                        statusAction.kind === 'reject'
-                      }
-                      disabled={statusAction !== null}
-                      onClick={() =>
-                        handleGymStatus(row, 'REJECTED')
-                      }
-                    >
-                      Reject
-                    </Button>
-                  </>
-                ) : null}
+                {isPendingGym(
+                  row
+                ) && (
+                    <>
+                      <Button
+                        type="primary"
+                        icon={
+                          <CheckOutlined />
+                        }
+                        loading={
+                          statusAction?.id ===
+                          row.id &&
+                          statusAction.kind ===
+                          'accept'
+                        }
+                        disabled={
+                          statusAction !==
+                          null
+                        }
+                        onClick={() =>
+                          handleGymStatus(
+                            row.id,
+                            'ACCEPTED'
+                          )
+                        }
+                      >
+                        Accept
+                      </Button>
+
+                      <Button
+                        danger
+                        icon={
+                          <CloseOutlined />
+                        }
+                        loading={
+                          statusAction?.id ===
+                          row.id &&
+                          statusAction.kind ===
+                          'reject'
+                        }
+                        disabled={
+                          statusAction !==
+                          null
+                        }
+                        onClick={() =>
+                          handleGymStatus(
+                            row.id,
+                            'REJECTED'
+                          )
+                        }
+                      >
+                        Reject
+                      </Button>
+                    </>
+                  )}
+
                 <Button
-                  icon={<EditOutlined />}
+                  icon={
+                    <EditOutlined />
+                  }
                   onClick={() =>
-                    handleEdit(row)
+                    handleEdit(
+                      row
+                    )
                   }
                 />
 
                 <Button
                   danger
-                  icon={<DeleteOutlined />}
+                  icon={
+                    <DeleteOutlined />
+                  }
                   onClick={() =>
-                    handleDelete(row.id)
+                    handleDelete(
+                      row
+                    )
                   }
                 />
               </div>
@@ -306,13 +373,47 @@ export default function GymManagementPage() {
         ]}
       />
 
-      {/* Modal */}
       <Modal
         open={open}
-        onCancel={() => setOpen(false)}
-        onOk={handleSubmit}
+        onCancel={() => {
+          setOpen(false)
+          setEditingGym(null)
+          form.resetFields()
+        }}
+        onOk={async () => {
+          const values =
+            await form.validateFields()
+
+          if (
+            editingGym
+          ) {
+            await updateGym({
+              id: editingGym.id,
+              ...values,
+            }).unwrap()
+
+            message.success(
+              'Gym updated successfully'
+            )
+
+            await refetch()
+          } else {
+            await handleSubmit({
+              ...values,
+              status:
+                'ACCEPTED',
+            } as IGym)
+          }
+
+          setOpen(false)
+          setEditingGym(
+            null
+          )
+          form.resetFields()
+        }}
         confirmLoading={
-          addingGym || updatingGym
+          addingGym ||
+          updatingGym
         }
         title={
           editingGym
@@ -351,6 +452,43 @@ export default function GymManagementPage() {
           >
             <Input />
           </Form.Item>
+
+          {editingGym && (
+            <Form.Item
+              name="status"
+              label="Status"
+              rules={[
+                {
+                  required: true,
+                  message:
+                    'Status is required',
+                },
+              ]}
+            >
+              <Select
+                options={[
+                  {
+                    label:
+                      'PENDING',
+                    value:
+                      'PENDING',
+                  },
+                  {
+                    label:
+                      'ACCEPTED',
+                    value:
+                      'ACCEPTED',
+                  },
+                  {
+                    label:
+                      'REJECTED',
+                    value:
+                      'REJECTED',
+                  },
+                ]}
+              />
+            </Form.Item>
+          )}
         </Form>
       </Modal>
     </div>

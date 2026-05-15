@@ -17,6 +17,6 @@ export const dnxApi = createApi({
       return headers
     },
   }),
-  tagTypes: ['Users'],
+  tagTypes: ['Users', 'SupportTickets'],
   endpoints: () => ({}),
 })
