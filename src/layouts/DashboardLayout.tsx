@@ -118,7 +118,8 @@ export function DashboardLayout() {
         >
           <div className="flex h-16 items-center gap-3 border-b border-dnx-border px-5">
             <div className="flex size-10 items-center justify-center rounded-2xl border border-dnx-yellow/35 bg-dnx-card text-dnx-yellow glow-yellow">
-              <DeploymentUnitOutlined className="text-xl" />
+              {/* <DeploymentUnitOutlined className="text-xl" /> */}
+              <img src="https://res.cloudinary.com/dabd4udau/image/upload/v1778837573/egtmi2hg1s8vi0rhv8ro.png" alt="DNX Admin" className=" h-10 object-contain" />
             </div>
             {!collapsed && (
               <div>

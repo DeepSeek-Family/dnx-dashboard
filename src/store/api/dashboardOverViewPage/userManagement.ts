@@ -23,7 +23,7 @@ type SingleUserApiResponse = {
   success?: boolean
   statusCode?: number
   message?: string
-  data: ManagedUserProfile
+  data?: ManagedUserProfile
 }
 
 export const userManagementApi = dnxApi.injectEndpoints({
