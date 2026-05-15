@@ -1,34 +1,21 @@
 import { ArrowLeftOutlined } from '@ant-design/icons'
 
 import {
-  Alert,
+
   Button,
   Card,
   Col,
   Descriptions,
   Row,
   Spin,
-  Table,
-  Tabs,
   Tag,
   Typography,
 } from 'antd'
 
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts'
+
 
 import { Link, useParams } from 'react-router-dom'
 
-import { AnimatedChartCard } from '@/components/AnimatedChartCard'
 
 import { ROUTES } from '@/constants/routes'
 
@@ -42,13 +29,7 @@ export default function UserProfilePage() {
   const { id } = useParams()
 
   const {
-    data: user,
-    isLoading,
-    refetch,
-  } = useGetSingleUserQuery(
-    id,
-
-  )
+    data: user, isLoading,} = useGetSingleUserQuery(id as string)
 
   if (!id) {
     return (
@@ -173,7 +154,7 @@ export default function UserProfilePage() {
         </Descriptions>
       </Card>
 
-      
+
     </div>
   )
 }

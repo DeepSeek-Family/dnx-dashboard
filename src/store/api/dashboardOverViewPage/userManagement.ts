@@ -1,6 +1,5 @@
 import { dnxApi } from '../dnxApi'
 
-/** Single-user payload from `GET /user-management/user/:id` */
 export type ManagedUserProfile = {
   name: string
   email: string
@@ -19,12 +18,7 @@ export type ManagedUserProfile = {
   expireAt: string
 }
 
-type SingleUserApiResponse = {
-  success?: boolean
-  statusCode?: number
-  message?: string
-  data?: ManagedUserProfile
-}
+
 
 export const userManagementApi = dnxApi.injectEndpoints({
   endpoints: (build) => ({
@@ -42,7 +36,7 @@ export const userManagementApi = dnxApi.injectEndpoints({
         url: `/user-management/user/${id}`,
         method: 'GET',
       }),
-      transformResponse: (response: SingleUserApiResponse) => response.data,
+      transformResponse: (response: any) => response.data,
       providesTags: (_result, _error, id) => [{ type: 'Users', id }],
     }),
     banUser: build.mutation({
