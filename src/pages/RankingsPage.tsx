@@ -311,7 +311,7 @@ export default function RankingsPage() {
               render:
                 (
                   _: any,
-                  row: any
+                  _row: any
                 ) => (
                   <Tag color="green">
                     Active

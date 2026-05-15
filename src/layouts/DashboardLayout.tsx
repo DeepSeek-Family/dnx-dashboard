@@ -11,7 +11,7 @@ import {
   UserSwitchOutlined,
   WalletOutlined,
 } from '@ant-design/icons'
-import { Avatar, Drawer, Dropdown, Grid, Layout, Menu, Spin, type MenuProps } from 'antd'
+import { Drawer, Dropdown, Grid, Layout, Menu, Spin, type MenuProps } from 'antd'
 import { motion } from 'framer-motion'
 import { useMemo, useState } from 'react'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'

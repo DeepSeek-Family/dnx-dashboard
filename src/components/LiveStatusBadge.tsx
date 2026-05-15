@@ -3,7 +3,7 @@ import { Badge } from 'antd'
 const pulseRing =
   'after:absolute after:inset-0 after:rounded-full after:animate-[ping_2.4s_ease-out_infinite] after:bg-dnx-yellow after:opacity-25'
 
-export function LiveStatusBadge({ demo }: { demo?: boolean }) {
+export function LiveStatusBadge() {
   return (
     <div className="inline-flex items-center gap-3 rounded-full border border-dnx-border bg-dnx-surface px-4 py-1.5 text-[11px] uppercase tracking-[0.22em] text-dnx-muted relative overflow-hidden glow-yellow">
       <span className="relative flex size-3 items-center justify-center">
