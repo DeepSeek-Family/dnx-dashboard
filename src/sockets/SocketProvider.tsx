@@ -2,7 +2,7 @@ import { io, type Socket } from 'socket.io-client'
 import type { ReactNode } from 'react'
 import { useEffect, useMemo, useState } from 'react'
 
-import { notification } from 'antd'
+import { App } from 'antd'
 
 import { SOCKET_EVENTS } from '@/sockets/events'
 import type { DnxSocketContextValue } from '@/sockets/socket-context'
@@ -10,6 +10,7 @@ import { SocketContext } from '@/sockets/socket-context'
 import type { AlertEventPayload, AthleteSocketPayload, DeviceStatusPayload, SessionUpdatePayload } from '@/types/socket'
 
 export function SocketProvider({ children }: { children: ReactNode }) {
+  const { notification } = App.useApp()
   const [socket, setSocket] = useState<Socket | null>(null)
   const [connected, setConnected] = useState(false)
   const demoMode = !import.meta.env.VITE_SOCKET_URL
@@ -66,7 +67,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
         setConnected(false)
       })
     }
-  }, [demoMode])
+  }, [demoMode, notification])
 
   const value = useMemo<DnxSocketContextValue>(
     () => ({

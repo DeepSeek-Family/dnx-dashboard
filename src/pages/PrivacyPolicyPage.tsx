@@ -1,26 +1,15 @@
+import { RuleHtmlPreview } from '@/components/RuleHtmlPreview'
+import { RuleRichTextEditor } from '@/components/RuleRichTextEditor'
 import { useCreateRuleMutation, useGetRuleByTypeQuery } from '@/store/api/dashboardOverViewPage/rule.api'
 import type { IRule } from '@/types/rule.types'
-import { Button, Card, Input, message, Spin, Typography } from 'antd'
+import { useAppMessage } from '@/hooks/useAppMessage'
+import { Button, Card, Modal, Spin, Typography } from 'antd'
 import { useState } from 'react'
 
-function readQueryErrorMessage(error: unknown): string {
-  if (error && typeof error === 'object' && 'data' in error) {
-    const data = (error as { data?: unknown }).data
-    if (typeof data === 'object' && data !== null && 'message' in data) {
-      const msg = (data as { message?: unknown }).message
-      if (typeof msg === 'string' && msg.trim()) return msg
-    }
-    if (typeof data === 'string' && data.trim()) return data
-  }
-  if (error && typeof error === 'object' && 'error' in error) {
-    const err = (error as { error?: unknown }).error
-    if (typeof err === 'string' && err.trim()) return err
-  }
-  return 'Privacy policy could not be loaded from the server.'
-}
-
 export default function PrivacyPolicyPage() {
+  const message = useAppMessage()
   const [draft, setDraft] = useState<string | null>(null)
+  const [preview, setPreview] = useState(false)
   const { data: rule, isLoading, refetch } = useGetRuleByTypeQuery('PRIVACY')
 
   const [updateRule, { isLoading: isUpdating }] = useCreateRuleMutation()
@@ -30,11 +19,11 @@ export default function PrivacyPolicyPage() {
   }
 
   const serverContent = rule?.data?.content ?? ''
-  const textareaValue = draft !== null ? draft : serverContent
+  const editorValue = draft !== null ? draft : serverContent
 
   const handleSaveChanges = async () => {
     await updateRule({
-      content: textareaValue,
+      content: editorValue,
       type: 'PRIVACY',
     } as unknown as IRule).unwrap().then(() => {
       message.success('Rule updated successfully')
@@ -54,11 +43,14 @@ export default function PrivacyPolicyPage() {
         </Typography.Title>
       </div>
       <Card className="glass-card rounded-[20px] border-dnx-border bg-dnx-card/90">
-        <Input.TextArea rows={14} value={textareaValue} onChange={(e) => setDraft(e.target.value)} />
-        <Typography.Paragraph className="!mt-4 !mb-0 !text-dnx-muted">
-        </Typography.Paragraph>
+        <RuleRichTextEditor
+          value={editorValue}
+          onChange={setDraft}
+          placeholder="Write your privacy policy…"
+        />
       </Card>
-      <div className="flex justify-end mt-4">
+      <div className="flex justify-end gap-3 mt-4">
+        <Button onClick={() => setPreview(true)}>Preview</Button>
         <Button
           type="primary"
           onClick={handleSaveChanges}
@@ -67,6 +59,17 @@ export default function PrivacyPolicyPage() {
           Save Changes
         </Button>
       </div>
+      <Modal
+        open={preview}
+        onCancel={() => setPreview(false)}
+        onOk={() => setPreview(false)}
+        title="Preview"
+        okText="Close"
+        width={720}
+        className="[&_.ant-modal-content]:bg-dnx-card [&_.ant-modal-header]:bg-dnx-card"
+      >
+        <RuleHtmlPreview html={editorValue} emptyMessage="No privacy policy content yet." />
+      </Modal>
     </div>
   )
 }

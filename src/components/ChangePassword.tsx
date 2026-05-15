@@ -1,9 +1,10 @@
 import { useChangePasswordMutation } from '@/store/api/auth.api'
 import type { ChangePasswordFormValues } from '@/types/auth'
 import { LockOutlined } from '@ant-design/icons'
-import { Card, Input, Form, message, Button } from 'antd'
+import { App, Card, Input, Form, Button } from 'antd'
 
 const ChangePassword = () => {
+    const { message } = App.useApp()
     const [form] = Form.useForm<ChangePasswordFormValues>()
 
     const [changePassword, { isLoading }] = useChangePasswordMutation()

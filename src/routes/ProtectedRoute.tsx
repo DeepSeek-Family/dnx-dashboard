@@ -8,7 +8,7 @@ export function ProtectedRoute() {
   const location = useLocation()
   const { accessToken, user, hydrated } = useAuthSession()
 
-  if (!hydrated) return <Spin size="large" fullscreen tip="Hydrating biometric console..." />
+  if (!hydrated) return <Spin size="large" fullscreen description="Hydrating biometric console..." />
 
   if (!accessToken || !user) return <Navigate to={ROUTES.login} state={{ from: location }} replace />
 

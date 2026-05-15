@@ -151,7 +151,7 @@ export function DashboardLayout() {
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         placement="left"
-        width={300}
+        size={300}
         title={<span className="text-dnx-yellow">DNX Navigation</span>}
         className="[&_.ant-drawer-header]:border-dnx-border [&_.ant-drawer-header]:bg-dnx-surface [&_.ant-drawer-body]:bg-dnx-surface"
       >

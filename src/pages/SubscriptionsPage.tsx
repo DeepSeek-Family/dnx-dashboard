@@ -495,7 +495,7 @@ export default function SubscriptionsPage() {
         open={manageOpen}
         onClose={closeManage}
         placement="right"
-        width={520}
+        size={520}
         title={<span className="text-white">Manage plan</span>}
         className="[&_.ant-drawer-header]:border-dnx-border [&_.ant-drawer-header]:bg-dnx-surface [&_.ant-drawer-body]:bg-dnx-surface"
       >

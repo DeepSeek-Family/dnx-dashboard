@@ -1,6 +1,9 @@
+import { RuleHtmlPreview } from '@/components/RuleHtmlPreview'
+import { RuleRichTextEditor } from '@/components/RuleRichTextEditor'
 import { useCreateRuleMutation, useGetRuleByTypeQuery } from '@/store/api/dashboardOverViewPage/rule.api'
 import type { IRule } from '@/types/rule.types'
-import { Alert, Button, Card, Input, message, Modal, Spin, Typography } from 'antd'
+import { useAppMessage } from '@/hooks/useAppMessage'
+import { Alert, Button, Card, Modal, Spin, Typography } from 'antd'
 import { useState } from 'react'
 
 function readQueryErrorMessage(error: unknown): string {
@@ -20,6 +23,7 @@ function readQueryErrorMessage(error: unknown): string {
 }
 
 export default function TermsConditionsPage() {
+  const message = useAppMessage()
   const [preview, setPreview] = useState(false)
   const {
     data: rule,
@@ -40,11 +44,11 @@ export default function TermsConditionsPage() {
   const rawContent = rule?.data?.content
   const serverContent =
     typeof rawContent === 'string' ? rawContent : ''
-  const textareaValue = draft !== null ? draft : serverContent
+  const editorValue = draft !== null ? draft : serverContent
 
   const handleSaveChanges = async () => {
     await updateRule({
-      content: textareaValue,
+      content: editorValue,
       type: 'TERMS',
     } as unknown as IRule).unwrap().then(() => {
       message.success('Rule updated successfully')
@@ -57,7 +61,6 @@ export default function TermsConditionsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div>
         <Typography.Text className="text-[11px] uppercase-tracking text-dnx-muted">
           Terms & Conditions
@@ -91,31 +94,29 @@ export default function TermsConditionsPage() {
         />
       )}
 
-      {/* Editor */}
       <Card className="glass-card rounded-[20px] border-dnx-border bg-dnx-card/90">
-        <Input.TextArea
-          value={textareaValue}
-          onChange={(e) => setDraft(e.target.value)}
-          rows={16}
-          className="font-mono"
+        <RuleRichTextEditor
+          value={editorValue}
+          onChange={setDraft}
+          placeholder="Write your terms and conditions…"
+          minHeight={360}
         />
       </Card>
 
-      {/* Modal */}
       <Modal
         open={preview}
         onCancel={() => setPreview(false)}
         onOk={() => setPreview(false)}
         title="Preview mode"
         okText="Close"
+        width={720}
+        className="[&_.ant-modal-content]:bg-dnx-card [&_.ant-modal-header]:bg-dnx-card"
       >
-        <pre className="whitespace-pre-wrap text-sm">
-          {textareaValue}
-        </pre>
+        <RuleHtmlPreview html={editorValue} emptyMessage="No terms content yet." />
       </Modal>
 
-      {/* Save button */}
-      <div className="flex justify-end mt-4">
+      <div className="flex justify-end gap-3 mt-4">
+        <Button onClick={() => setPreview(true)}>Preview</Button>
         <Button
           type="primary"
           onClick={handleSaveChanges}

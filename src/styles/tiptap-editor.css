@@ -1,0 +1,198 @@
+.rule-tiptap-editor {
+  border: 1px solid rgba(43, 48, 72, 0.9);
+  border-radius: 12px;
+  background: rgba(14, 17, 32, 0.65);
+  overflow: hidden;
+}
+
+.rule-tiptap-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(43, 48, 72, 0.9);
+  background: rgba(14, 17, 32, 0.85);
+}
+
+.rule-tiptap-toolbar button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: #8b91a8;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.rule-tiptap-toolbar button:hover {
+  background: rgba(255, 214, 0, 0.08);
+  color: #ffffff;
+}
+
+.rule-tiptap-toolbar button.is-active {
+  background: rgba(255, 214, 0, 0.14);
+  border-color: rgba(255, 214, 0, 0.25);
+  color: #ffd600;
+}
+
+.rule-tiptap-toolbar button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.rule-tiptap-editor .ProseMirror {
+  min-height: 320px;
+  padding: 14px 16px;
+  color: #ffffff;
+  outline: none;
+  font-family: 'Space Grotesk', Inter, system-ui, sans-serif;
+  line-height: 1.65;
+}
+
+.rule-tiptap-editor .ProseMirror > * + * {
+  margin-top: 0.65em;
+}
+
+.rule-tiptap-editor .ProseMirror h1,
+.rule-tiptap-editor .ProseMirror h2,
+.rule-tiptap-editor .ProseMirror h3 {
+  color: #ffffff;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.rule-tiptap-editor .ProseMirror h1 {
+  font-size: 1.5rem;
+}
+
+.rule-tiptap-editor .ProseMirror h2 {
+  font-size: 1.25rem;
+}
+
+.rule-tiptap-editor .ProseMirror h3 {
+  font-size: 1.1rem;
+}
+
+.rule-tiptap-editor .ProseMirror p {
+  color: #ffffff;
+}
+
+.rule-tiptap-editor .ProseMirror strong {
+  color: #ffffff;
+}
+
+.rule-tiptap-editor .ProseMirror em {
+  color: #e8eaf3;
+}
+
+.rule-tiptap-editor .ProseMirror a {
+  color: #ffd600;
+  text-decoration: underline;
+}
+
+.rule-tiptap-editor .ProseMirror blockquote {
+  margin: 0.5em 0;
+  padding-left: 1em;
+  border-left: 3px solid rgba(255, 214, 0, 0.45);
+  color: #8b91a8;
+}
+
+.rule-tiptap-editor .ProseMirror ul,
+.rule-tiptap-editor .ProseMirror ol {
+  padding-left: 1.25rem;
+  color: #ffffff;
+}
+
+.rule-tiptap-editor .ProseMirror li::marker {
+  color: #ffd600;
+}
+
+.rule-tiptap-editor .ProseMirror code {
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  background: rgba(43, 48, 72, 0.65);
+  color: #ffd600;
+  font-size: 0.9em;
+}
+
+.rule-tiptap-editor .ProseMirror pre {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(43, 48, 72, 0.9);
+  background: rgba(5, 8, 22, 0.75);
+  color: #e8eaf3;
+  overflow-x: auto;
+}
+
+.rule-tiptap-editor .ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+  color: #8b91a8;
+}
+
+.rule-html-preview {
+  color: #ffffff;
+  line-height: 1.65;
+}
+
+.rule-html-preview h1,
+.rule-html-preview h2,
+.rule-html-preview h3 {
+  color: #ffffff;
+  font-weight: 600;
+  margin: 0.75em 0 0.35em;
+}
+
+.rule-html-preview p {
+  margin: 0.5em 0;
+  color: #ffffff;
+}
+
+.rule-html-preview a {
+  color: #ffd600;
+  text-decoration: underline;
+}
+
+.rule-html-preview blockquote {
+  margin: 0.5em 0;
+  padding-left: 1em;
+  border-left: 3px solid rgba(255, 214, 0, 0.45);
+  color: #8b91a8;
+}
+
+.rule-html-preview ul,
+.rule-html-preview ol {
+  padding-left: 1.25rem;
+  margin: 0.5em 0;
+}
+
+.rule-html-preview li::marker {
+  color: #ffd600;
+}
+
+.rule-html-preview code {
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  background: rgba(43, 48, 72, 0.65);
+  color: #ffd600;
+}
+
+.rule-html-preview pre {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(43, 48, 72, 0.9);
+  background: rgba(5, 8, 22, 0.75);
+  overflow-x: auto;
+}
