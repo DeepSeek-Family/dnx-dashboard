@@ -1,5 +1,6 @@
+import type { ChangePasswordRequest } from '@/types/auth'
 
-import { dnxApi } from "./dnxApi";
+import { dnxApi } from './dnxApi'
 
 const authApi = dnxApi.injectEndpoints({
     endpoints: (build) => ({
@@ -10,7 +11,24 @@ const authApi = dnxApi.injectEndpoints({
                 body,
             }),
         }),
+
+        getUser: build.query({
+            query: () => ({
+                url: '/users',
+                method: 'GET',
+            }),
+            providesTags: ['User'],
+        }),
+
+
+        changePassword: build.mutation<unknown, ChangePasswordRequest>({
+            query: (body) => ({
+                url: '/auth/change-password',
+                method: 'POST',
+                body,
+            }),
+        }),
     }),
 })
 
-export const { useLoginMutation } = authApi
+export const { useLoginMutation, useGetUserQuery, useChangePasswordMutation } = authApi

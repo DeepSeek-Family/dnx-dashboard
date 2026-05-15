@@ -9,6 +9,7 @@ import { CDN_IMAGE_BASE } from './src/utils/api-base'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
+    port: 4173,
     host: true,
     // Static uploads often send Cross-Origin-Resource-Policy: same-origin, which blocks
     // <img src="http://api-host/..."> from the dev origin. Proxy keeps requests same-origin.

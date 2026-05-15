@@ -6,6 +6,8 @@ import { AnimatedNumber } from '@/components/AnimatedNumber'
 import { MetricCard } from '@/components/MetricCard'
 import { mockKpi } from '@/utils/mockData'
 import { useGetDashboardOverviewQuery, useGetMOnthlyProgressQuery } from '@/store/api/dashboardOverViewPage/dashboardOverview'
+import { Link } from 'react-router-dom'
+import { ROUTES } from '@/constants/routes'
 
 export default function DashboardPage() {
   const kpi = mockKpi
@@ -24,7 +26,7 @@ export default function DashboardPage() {
     "december",
   ];
   const kpiLoading = false
-  const { data: dashboardOverview, isLoading: isDashboardOverviewLoading } = useGetDashboardOverviewQuery({})
+  const { data: dashboardOverview, } = useGetDashboardOverviewQuery({})
   const { data: monthlyProgress, isLoading: isMonthlyProgressLoading } = useGetMOnthlyProgressQuery({})
   const dashboardOverviewData = dashboardOverview?.data ?? {}
 
@@ -131,55 +133,9 @@ export default function DashboardPage() {
         )}
       </Card>
 
-      {/* Recent activity + pending requests */}
+      {/* Pending requests */}
       <Row gutter={[20, 20]} className="mt-12">
-        <Col xs={24} md={12}>
-          <Card
-            title={<span className="text-sm font-medium text-white">Recent Activity</span>}
-            className="glass-card !border-dnx-border/80 !bg-dnx-card/80 !shadow-none "
-            bodyStyle={{ padding: 20 }}
-          >
-            <ul className="space-y-3 text-sm">
-              <li className="flex items-center justify-between gap-3">
-                <span className="flex items-center gap-2 text-white">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/15 text-xs text-emerald-400">
-                    ✓
-                  </span>
-                  Gym “Form Studio” approved
-                </span>
-                <span className="text-xs text-dnx-muted">2m ago</span>
-              </li>
-              <li className="flex items-center justify-between gap-3">
-                <span className="flex items-center gap-2 text-white">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-dnx-yellow/15 text-xs text-dnx-yellow">
-                    $
-                  </span>
-                  Subscription “Pro Monthly” updated
-                </span>
-                <span className="text-xs text-dnx-muted">14m ago</span>
-              </li>
-              <li className="flex items-center justify-between gap-3">
-                <span className="flex items-center gap-2 text-white">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-dnx-yellow/10 text-xs text-dnx-yellow">
-                    +
-                  </span>
-                  New user registered
-                </span>
-                <span className="text-xs text-dnx-muted">27m ago</span>
-              </li>
-              <li className="flex items-center justify-between gap-3">
-                <span className="flex items-center gap-2 text-white">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-sky-500/15 text-xs text-sky-400">
-                    ●
-                  </span>
-                  Live session started at DNX Lab
-                </span>
-                <span className="text-xs text-dnx-muted">1h ago</span>
-              </li>
-            </ul>
-          </Card>
-        </Col>
-        <Col xs={24} md={12}>
+        <Col span={24}>
           <Card
             title={<span className="text-sm font-medium text-white">Pending Requests</span>}
             className="glass-card !border-dnx-border/80 !bg-dnx-card/80 !shadow-none"
@@ -192,7 +148,7 @@ export default function DashboardPage() {
                   <p className="text-xs text-dnx-muted">4 gyms waiting for admin review</p>
                 </div>
                 <Button size="small" className="rounded-full border-dnx-yellow/60 text-dnx-yellow">
-                  Review
+                  <Link to={ROUTES.gyms}>Review</Link>
                 </Button>
               </div>
               <div className="flex items-center justify-between gap-3">
@@ -201,7 +157,7 @@ export default function DashboardPage() {
                   <p className="text-xs text-dnx-muted">2 tickets pending assignment</p>
                 </div>
                 <Button size="small" className="rounded-full border-dnx-yellow/60 text-dnx-yellow">
-                  Open
+                  <Link to={ROUTES.support}>Open</Link>
                 </Button>
               </div>
               <div className="flex items-center justify-between gap-3">
@@ -210,7 +166,7 @@ export default function DashboardPage() {
                   <p className="text-xs text-dnx-muted">1 plan in draft state</p>
                 </div>
                 <Button size="small" className="rounded-full border-dnx-yellow/60 text-dnx-yellow">
-                  Manage
+                  <Link to={ROUTES.subscriptions}>Manage</Link>
                 </Button>
               </div>
             </div>

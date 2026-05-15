@@ -13,3 +13,15 @@ export interface AuthTokens {
   refreshToken: string
   expiresAt: number
 }
+
+/** POST /auth/change-password request body */
+export interface ChangePasswordRequest {
+  oldPassword: string
+  newPassword: string
+}
+
+/** Ant Design form values before mapping to the API */
+export interface ChangePasswordFormValues {
+  oldPassword: string
+  newPassword: string
+}

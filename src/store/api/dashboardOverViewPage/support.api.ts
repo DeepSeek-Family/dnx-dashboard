@@ -22,6 +22,9 @@ export type SupportTicketsListResponse = {
 
 const supportApi = dnxApi.injectEndpoints({
     endpoints: (build) => ({
+        
+
+
         getAllSupportTickets: build.query<
             SupportTicketsListResponse,
             SupportTicketsListParams
@@ -65,4 +68,4 @@ const supportApi = dnxApi.injectEndpoints({
     }),
 })
 
-export const { useGetAllSupportTicketsQuery, useGetSupportTicketByIdQuery, useUpdateSupportTicketMutation } = supportApi;
+export const {  useGetAllSupportTicketsQuery, useGetSupportTicketByIdQuery, useUpdateSupportTicketMutation } = supportApi;
