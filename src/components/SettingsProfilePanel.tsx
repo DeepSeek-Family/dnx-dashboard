@@ -2,7 +2,7 @@
 import { App, Avatar, Button, Card, Form, Input, Space, Typography, Upload } from 'antd'
 import { CameraOutlined, MailOutlined, UserOutlined } from '@ant-design/icons'
 
-import { getProfileImageUrl } from '@/shared/getImageUrl'
+import { getImageUrl } from '@/shared/getImageUrl'
 import { useGetUserQuery, useUpdateUserMutation } from '@/store/api/auth.api'
 import type { SettingsProfileUser, UpdateProfileFormValues } from '@/types/auth'
 
@@ -26,7 +26,7 @@ const SettingsProfilePanel = ({ user }: { user?: SettingsProfileUser }) => {
   }, [user?.name, form])
 
   const profileSrc =
-    previewUrl || (user?.profile?.trim() ? getProfileImageUrl(user.profile) : '')
+    previewUrl || (user?.profile?.trim() ? getImageUrl(user.profile) : '')
 
   const handleUpdateUser = async (values: UpdateProfileFormValues) => {
     const formData = new FormData()
@@ -44,9 +44,9 @@ const SettingsProfilePanel = ({ user }: { user?: SettingsProfileUser }) => {
     } catch (err: unknown) {
       const apiMessage =
         typeof err === 'object' &&
-        err !== null &&
-        'data' in err &&
-        typeof (err as { data?: { message?: unknown } }).data?.message === 'string'
+          err !== null &&
+          'data' in err &&
+          typeof (err as { data?: { message?: unknown } }).data?.message === 'string'
           ? (err as { data: { message: string } }).data.message
           : null
       message.error(apiMessage ?? 'Could not update profile')

@@ -17,7 +17,7 @@ import { useMemo, useState } from 'react'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 
 import { ROUTES } from '@/constants/routes'
-import { getProfileImageUrl } from '@/shared/getImageUrl'
+import { getImageUrl } from '@/shared/getImageUrl'
 import { useGetUserQuery } from '@/store/api/auth.api'
 
 const { Header, Sider, Content } = Layout
@@ -100,6 +100,7 @@ export function DashboardLayout() {
     return <Spin className="flex justify-center items-center h-full" />
   }
 
+  const userFullData = userData?.data
   const handleLogout = () => {
     localStorage.removeItem('token')
     nav(ROUTES.login)
@@ -151,7 +152,7 @@ export function DashboardLayout() {
               menu={{
                 items: [
                   { key: 'profile', label: 'Admin profile' },
-                  { type: 'divider' },
+                  { type: 'divider'  },
                   {
                     key: 'out',
                     danger: true,
@@ -168,7 +169,7 @@ export function DashboardLayout() {
                 className="flex items-center gap-2 rounded-2xl border border-dnx-border bg-dnx-card px-3 py-1.5"
               >
                 <img
-                  src={getProfileImageUrl(userData?.data?.profile)}
+                  src={getImageUrl(userFullData?.profile)}
                   alt=""
                   className="w-8 h-8 rounded-full"
                 />
