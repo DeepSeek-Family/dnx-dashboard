@@ -11,15 +11,15 @@ import {
   UserSwitchOutlined,
   WalletOutlined,
 } from '@ant-design/icons'
-import { Avatar, Drawer, Dropdown, Grid, Layout, Menu, type MenuProps } from 'antd'
+import { Avatar, Drawer, Dropdown, Grid, Layout, Menu, Spin, type MenuProps } from 'antd'
 import { motion } from 'framer-motion'
 import { useMemo, useState } from 'react'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 
 import { useAuthSession } from '@/context/AuthSessionContext'
-import { LiveStatusBadge } from '@/components/LiveStatusBadge'
 import { ROUTES } from '@/constants/routes'
-import { useDnxSocket } from '@/sockets/socket-context'
+import { getProfileImageUrl } from '@/shared/getImageUrl'
+import { useGetUserQuery } from '@/store/api/auth.api'
 
 const { Header, Sider, Content } = Layout
 
@@ -37,12 +37,12 @@ const navItems: MenuProps['items'] = [
 
 export function DashboardLayout() {
   const screens = Grid.useBreakpoint()
+  const { data: userData, isLoading } = useGetUserQuery({})
   const [collapsed, setCollapsed] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const location = useLocation()
   const nav = useNavigate()
-  const { user, logout } = useAuthSession()
-  const { demoMode } = useDnxSocket()
+  const { logout } = useAuthSession()
   const mobile = !screens.lg
 
   const selectedKey = useMemo(() => {
@@ -61,6 +61,9 @@ export function DashboardLayout() {
       className="border-none bg-transparent px-2 py-4 [&_.ant-menu-item]:rounded-xl [&_.ant-menu-item-selected]:bg-dnx-yellow/15 [&_.ant-menu-item-selected]:text-dnx-yellow [&_.ant-menu-item-active]:text-dnx-yellow"
     />
   )
+  if (isLoading) {
+    return <Spin className="flex justify-center items-center h-full" />
+  }
 
   return (
     <Layout className="min-h-svh bg-dnx-bg">
@@ -99,11 +102,10 @@ export function DashboardLayout() {
               {collapsed || mobile ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             </button>
             <div className="hidden md:block">
-              <p className="text-[10px] uppercase-tracking text-dnx-muted">Elite athletic intelligence center</p>
+              <p className="text-[10px] uppercase-tracking text-dnx-muted">DNX Admin</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <LiveStatusBadge demo={demoMode} />
             <Dropdown
               menu={{
                 items: [
@@ -125,13 +127,8 @@ export function DashboardLayout() {
                 type="button"
                 className="flex items-center gap-2 rounded-2xl border border-dnx-border bg-dnx-card px-3 py-1.5"
               >
-                <Avatar className="bg-dnx-yellow/20 text-dnx-yellow">
-                  {(user?.name ?? 'DNX')
-                    .split(' ')
-                    .map((p) => p[0])
-                    .join('')
-                    .slice(0, 2)}
-                </Avatar>
+
+                <img src={getProfileImageUrl(userData?.data?.profile)} alt="" className="w-8 h-8 rounded-full" />
               </button>
             </Dropdown>
           </div>

@@ -24,6 +24,7 @@ export default function UserManagementPage() {
   const [searchInput, setSearchInput] = useState('')
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('')
   const [verifiedFilter, setVerifiedFilter] = useState<string | null>(null)
+  const [listQuery, setListQuery] = useState({ page: 1, limit: 10 })
   const [banUser] = useBanUserMutation()
 
   const scheduleDebouncedSearch = useMemo(
@@ -37,31 +38,25 @@ export default function UserManagementPage() {
 
   useEffect(() => () => scheduleDebouncedSearch.cancel(), [scheduleDebouncedSearch])
 
+  useEffect(() => {
+    setListQuery((q) => ({ ...q, page: 1 }))
+  }, [debouncedSearchTerm, verifiedFilter])
+
   const { data: userManagement, isLoading, refetch } =
     useGetUserManagementQuery({
-      page: 1,
-      limit: 10,
+      ...listQuery,
       searchTerm: debouncedSearchTerm,
     })
 
   const userManagementData = userManagement?.data ?? []
+  const serverPagination = userManagement?.pagination
 
-  const filteredData = useMemo(() => {
-    return userManagementData.filter((user: any) => {
-      const matchesSearch =
-        !searchInput ||
-        `${user.name} ${user.email} ${user.nickName}`
-          .toLowerCase()
-          .includes(searchInput.toLowerCase())
-
-      const matchesVerified =
-        !verifiedFilter ||
-        (verifiedFilter === 'verified' && user.verified) ||
-        (verifiedFilter === 'unverified' && !user.verified)
-
-      return matchesSearch && matchesVerified
-    })
-  }, [searchInput, verifiedFilter, userManagementData])
+  const displayData = useMemo(() => {
+    if (!verifiedFilter) return userManagementData
+    return userManagementData.filter((user: { verified: boolean }) =>
+      verifiedFilter === 'verified' ? user.verified : !user.verified,
+    )
+  }, [userManagementData, verifiedFilter])
 
 
   const handleBanUser = async (id: string, isBanned: boolean) => {
@@ -118,22 +113,42 @@ export default function UserManagementPage() {
             },
           ]}
           value={verifiedFilter ?? undefined}
-          onChange={(v) => setVerifiedFilter(v ?? null)}
+          onChange={(v) => {
+            setVerifiedFilter(v ?? null)
+            setListQuery((q) => ({ ...q, page: 1 }))
+          }}
         />
       </div>
 
       {/* Table */}
+      <div className="overflow-x-auto">
       <Table
         rowKey="id"
         loading={isLoading}
-        dataSource={filteredData}
+        dataSource={displayData}
+        scroll={{ x: 'max-content' }}
         className="[&_.ant-table]:!bg-transparent"
-        pagination={{
-          current: userManagement?.pagination?.page || 1,
-          pageSize: userManagement?.pagination?.limit || 10,
-          total: userManagement?.pagination?.total || 0,
-          showSizeChanger: false,
-        }}
+        pagination={
+          !verifiedFilter
+            ? {
+                current: serverPagination?.page ?? listQuery.page,
+                pageSize: serverPagination?.limit ?? listQuery.limit,
+                total: serverPagination?.total ?? 0,
+                showSizeChanger: true,
+                pageSizeOptions: [10, 20, 50],
+                showTotal: (total, range) =>
+                  `${range[0]}-${range[1]} of ${total} users`,
+                onChange: (page, pageSize) => {
+                  setListQuery({ page, limit: pageSize })
+                },
+              }
+            : {
+                pageSize: listQuery.limit,
+                showSizeChanger: false,
+                showTotal: (total, range) =>
+                  `${range[0]}-${range[1]} of ${total} (this page)`,
+              }
+        }
         columns={[
           {
             title: 'User',
@@ -230,6 +245,7 @@ export default function UserManagementPage() {
           },
         ]}
       />
+      </div>
     </div>
   )
 }

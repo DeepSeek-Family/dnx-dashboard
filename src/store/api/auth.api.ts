@@ -28,7 +28,16 @@ const authApi = dnxApi.injectEndpoints({
                 body,
             }),
         }),
+
+        updateUser: build.mutation<unknown, FormData>({
+            query: (body) => ({
+                url: '/users',
+                method: 'PATCH',
+                body,
+            }),
+            invalidatesTags: ['User'],
+        }),
     }),
 })
 
-export const { useLoginMutation, useGetUserQuery, useChangePasswordMutation } = authApi
+export const { useLoginMutation, useGetUserQuery, useChangePasswordMutation, useUpdateUserMutation } = authApi

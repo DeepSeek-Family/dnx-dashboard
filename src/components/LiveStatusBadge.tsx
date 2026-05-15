@@ -9,9 +9,6 @@ export function LiveStatusBadge({ demo }: { demo?: boolean }) {
       <span className="relative flex size-3 items-center justify-center">
         <span className={`relative z-10 size-2 rounded-full bg-dnx-yellow ${pulseRing}`} />
       </span>
-      <span className="flex flex-col gap-0.5 leading-tight">
-        <span className="text-dnx-text">{demo ? 'Neural uplink demo' : 'Live neural uplink'}</span>
-      </span>
     </div>
   )
 }

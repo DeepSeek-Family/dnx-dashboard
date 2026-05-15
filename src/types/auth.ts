@@ -25,3 +25,14 @@ export interface ChangePasswordFormValues {
   oldPassword: string
   newPassword: string
 }
+
+export interface SettingsProfileUser {
+  name?: string
+  email?: string
+  profile?: string
+  role?: string
+}
+
+export interface UpdateProfileFormValues {
+  name: string
+}

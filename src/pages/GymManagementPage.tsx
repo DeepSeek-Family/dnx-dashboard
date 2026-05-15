@@ -121,14 +121,14 @@ export default function GymManagementPage() {
   const handleGymStatus = async (
     id: string,
     status:
-      | 'ACCEPTED'
+      | 'APPROVED'
       | 'REJECTED'
   ) => {
     try {
       setStatusAction({
         id,
         kind:
-          status === 'ACCEPTED'
+          status === 'APPROVED'
             ? 'accept'
             : 'reject',
       })
@@ -247,7 +247,7 @@ export default function GymManagementPage() {
 
               const color =
                 s ===
-                  'ACCEPTED'
+                  'APPROVED'
                   ? 'success'
                   : s ===
                     'REJECTED'
@@ -311,7 +311,7 @@ export default function GymManagementPage() {
                         onClick={() =>
                           handleGymStatus(
                             row.id,
-                            'ACCEPTED'
+                            'APPROVED'
                           )
                         }
                       >
@@ -401,7 +401,7 @@ export default function GymManagementPage() {
             await handleSubmit({
               ...values,
               status:
-                'ACCEPTED',
+                'APPROVED',
             } as IGym)
           }
 
@@ -475,9 +475,9 @@ export default function GymManagementPage() {
                   },
                   {
                     label:
-                      'ACCEPTED',
+                      'APPROVED',
                     value:
-                      'ACCEPTED',
+                      'APPROVED',
                   },
                   {
                     label:
