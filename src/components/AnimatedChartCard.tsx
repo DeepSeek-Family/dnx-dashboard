@@ -21,11 +21,17 @@ export function AnimatedChartCard({ title, subtitle, actions, children }: Props)
         <div className="mb-5 flex flex-wrap items-start justify-between gap-4">
           <div>
             <h3 className="text-xs uppercase-tracking text-dnx-muted">{title}</h3>
-            {subtitle && <p className="mt-2 text-sm leading-6 text-white/80">{subtitle}</p>}
+            {subtitle && (
+              <p className="mt-2 text-sm leading-6 text-white/80">{subtitle}</p>
+            )}
           </div>
           {actions}
         </div>
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.12, duration: 0.5 }}>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.12, duration: 0.5 }}
+        >
           {children}
         </motion.div>
       </div>

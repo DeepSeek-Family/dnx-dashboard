@@ -10,7 +10,9 @@ export interface SessionUpdatePayload {
 
 export interface AthleteSocketPayload {
   athleteId: string
-  patch: Partial<Pick<LiveSessionRow, 'heartRate' | 'loadScore' | 'status' | 'sessionSeconds'>>
+  patch: Partial<
+    Pick<LiveSessionRow, 'heartRate' | 'loadScore' | 'status' | 'sessionSeconds'>
+  >
 }
 
 export interface RankingUpdatePayload {

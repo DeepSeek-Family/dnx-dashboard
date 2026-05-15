@@ -1,6 +1,9 @@
 import { RuleHtmlPreview } from '@/components/RuleHtmlPreview'
 import { RuleRichTextEditor } from '@/components/RuleRichTextEditor'
-import { useCreateRuleMutation, useGetRuleByTypeQuery } from '@/store/api/dashboardOverViewPage/rule.api'
+import {
+  useCreateRuleMutation,
+  useGetRuleByTypeQuery,
+} from '@/store/api/dashboardOverViewPage/rule.api'
 import type { IRule } from '@/types/rule.types'
 import { useAppMessage } from '@/hooks/useAppMessage'
 import { Button, Card, Modal, Spin, Typography } from 'antd'
@@ -25,19 +28,24 @@ export default function PrivacyPolicyPage() {
     await updateRule({
       content: editorValue,
       type: 'PRIVACY',
-    } as unknown as IRule).unwrap().then(() => {
-      message.success('Rule updated successfully')
-      setDraft(null)
-      refetch()
-    }).catch((error) => {
-      message.error(error?.data?.message || 'Update failed')
-    })
+    } as unknown as IRule)
+      .unwrap()
+      .then(() => {
+        message.success('Rule updated successfully')
+        setDraft(null)
+        refetch()
+      })
+      .catch((error) => {
+        message.error(error?.data?.message || 'Update failed')
+      })
   }
 
   return (
     <div className="space-y-6">
       <div>
-        <Typography.Text className="text-[11px] uppercase-tracking text-dnx-muted">Privacy Policy</Typography.Text>
+        <Typography.Text className="text-[11px] uppercase-tracking text-dnx-muted">
+          Privacy Policy
+        </Typography.Text>
         <Typography.Title level={2} className="!mb-1 !mt-2 !text-white">
           Policy management workspace
         </Typography.Title>
@@ -51,11 +59,7 @@ export default function PrivacyPolicyPage() {
       </Card>
       <div className="flex justify-end gap-3 mt-4">
         <Button onClick={() => setPreview(true)}>Preview</Button>
-        <Button
-          type="primary"
-          onClick={handleSaveChanges}
-          loading={isUpdating}
-        >
+        <Button type="primary" onClick={handleSaveChanges} loading={isUpdating}>
           Save Changes
         </Button>
       </div>
@@ -68,7 +72,10 @@ export default function PrivacyPolicyPage() {
         width={720}
         className="[&_.ant-modal-content]:bg-dnx-card [&_.ant-modal-header]:bg-dnx-card"
       >
-        <RuleHtmlPreview html={editorValue} emptyMessage="No privacy policy content yet." />
+        <RuleHtmlPreview
+          html={editorValue}
+          emptyMessage="No privacy policy content yet."
+        />
       </Modal>
     </div>
   )

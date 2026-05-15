@@ -1,7 +1,7 @@
 export interface IRule {
-    id: string
-    content: string
-    type: string
-    createdAt: string
-    updatedAt: string
+  id: string
+  content: string
+  type: string
+  createdAt: string
+  updatedAt: string
 }

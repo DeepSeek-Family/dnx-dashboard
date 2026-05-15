@@ -50,7 +50,10 @@ export function AppRoutes() {
               <Route path={ROUTES.users.slice(1)} element={<UserManagementPage />} />
               <Route path="users/:id" element={<UserProfilePage />} />
               <Route path={ROUTES.gyms.slice(1)} element={<GymManagementPage />} />
-              <Route path={ROUTES.subscriptions.slice(1)} element={<SubscriptionsPage />} />
+              <Route
+                path={ROUTES.subscriptions.slice(1)}
+                element={<SubscriptionsPage />}
+              />
               <Route path={ROUTES.support.slice(1)} element={<SupportPage />} />
               <Route path={ROUTES.terms.slice(1)} element={<TermsConditionsPage />} />
               <Route path={ROUTES.privacy.slice(1)} element={<PrivacyPolicyPage />} />

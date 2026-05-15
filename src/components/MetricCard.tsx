@@ -10,7 +10,14 @@ interface MetricCardProps {
   delay?: number
 }
 
-export function MetricCard({ label, value, sublabel, icon, accent = 'yellow', delay = 0 }: MetricCardProps) {
+export function MetricCard({
+  label,
+  value,
+  sublabel,
+  icon,
+  accent = 'yellow',
+  delay = 0,
+}: MetricCardProps) {
   const ring =
     accent === 'green'
       ? 'from-dnx-success/25'

@@ -1,69 +1,44 @@
-import { SearchOutlined } from "@ant-design/icons";
-import {
-  Avatar,
-  Col,
-  Input,
-  Row,
-  Spin,
-  Table,
-  Tag,
-} from "antd";
-import { motion } from "framer-motion";
-import { useMemo, useState } from "react";
+import { SearchOutlined } from '@ant-design/icons'
+import { Avatar, Col, Input, Row, Spin, Table, Tag } from 'antd'
+import { motion } from 'framer-motion'
+import { useMemo, useState } from 'react'
 
-import { AnimatedChartCard } from "@/components/AnimatedChartCard";
+import { AnimatedChartCard } from '@/components/AnimatedChartCard'
 
-import { useGetSessionQuery } from "@/store/api/session.api";
+import { useGetSessionQuery } from '@/store/api/session.api'
 
 export default function RankingsPage() {
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState('')
+  const [page, setPage] = useState(1)
 
-  const limit = 20;
+  const limit = 20
 
-  const { data: session, isLoading } =
-    useGetSessionQuery({
-      page,
-      limit,
-    });
+  const { data: session, isLoading } = useGetSessionQuery({
+    page,
+    limit,
+  })
 
-  const leaderboard =
-    session?.data || [];
+  const leaderboard = session?.data || []
 
-  const pagination =
-    session?.pagination;
+  const pagination = session?.pagination
 
   const filtered = useMemo(() => {
-    const q = search
-      .trim()
-      .toLowerCase();
+    const q = search.trim().toLowerCase()
 
     return leaderboard.filter(
       (item: any) =>
         !q ||
-        item?.user?.name
-          ?.toLowerCase()
-          ?.includes(q) ||
-        item?.user?.nickName
-          ?.toLowerCase()
-          ?.includes(q)
-    );
-  }, [leaderboard, search]);
+        item?.user?.name?.toLowerCase()?.includes(q) ||
+        item?.user?.nickName?.toLowerCase()?.includes(q),
+    )
+  }, [leaderboard, search])
 
   const podium = useMemo(() => {
-    return [...filtered]
-      .sort(
-        (a, b) =>
-          (a.rank || 0) -
-          (b.rank || 0)
-      )
-      .slice(0, 3);
-  }, [filtered]);
+    return [...filtered].sort((a, b) => (a.rank || 0) - (b.rank || 0)).slice(0, 3)
+  }, [filtered])
 
   if (isLoading) {
-    return (
-      <Spin className="flex h-screen items-center justify-center" />
-    );
+    return <Spin className="flex h-screen items-center justify-center" />
   }
 
   return (
@@ -77,250 +52,129 @@ export default function RankingsPage() {
           DNX supremacy standings
         </h1>
 
-        <p className="mt-2 text-dnx-muted">
-          National leaderboard
-        </p>
+        <p className="mt-2 text-dnx-muted">National leaderboard</p>
       </div>
 
       <div className="glass-card rounded-[20px] border border-dnx-border/70 p-4">
-
         <Input.Search
           allowClear
-          prefix={
-            <SearchOutlined />
-          }
+          prefix={<SearchOutlined />}
           placeholder="Search athlete"
           onSearch={setSearch}
         />
-
       </div>
 
       <Row gutter={[18, 18]}>
-        {podium.map(
-          (
-            entry: any,
-            idx
-          ) => (
-            <Col
-              xs={24}
-              md={8}
-              key={
-                entry.id
-              }
+        {podium.map((entry: any, idx) => (
+          <Col xs={24} md={8} key={entry.id}>
+            <motion.div
+              initial={{
+                opacity: 0,
+                y: 14,
+              }}
+              animate={{
+                opacity: 1,
+                y: idx === 0 ? -12 : idx === 1 ? -4 : 0,
+              }}
             >
-              <motion.div
-                initial={{
-                  opacity: 0,
-                  y: 14,
-                }}
-                animate={{
-                  opacity: 1,
-                  y:
-                    idx === 0
-                      ? -12
-                      : idx === 1
-                        ? -4
-                        : 0,
-                }}
-              >
-                <div className="absolute inset-x-10 -top-6 flex justify-center">
-                  <span className="rounded-full bg-yellow-400 px-3 py-1 text-black">
-                    #
-                    {entry.rank ??
-                      "-"}
-                  </span>
-                </div>
+              <div className="absolute inset-x-10 -top-6 flex justify-center">
+                <span className="rounded-full bg-yellow-400 px-3 py-1 text-black">
+                  #{entry.rank ?? '-'}
+                </span>
+              </div>
 
-                <div className="glass-card rounded-[22px] p-5 pt-8">
+              <div className="glass-card rounded-[22px] p-5 pt-8">
+                <Avatar size={60} src={entry?.user?.profile}>
+                  {entry?.user?.name?.[0] || 'U'}
+                </Avatar>
 
-                  <Avatar
-                    size={
-                      60
-                    }
-                    src={
-                      entry
-                        ?.user
-                        ?.profile
-                    }
-                  >
-                    {entry
-                      ?.user?.name?.[0] ||
-                      "U"}
-                  </Avatar>
+                <p className="mt-3 text-center text-white">
+                  {entry?.user?.name || 'Unknown'}
+                </p>
 
-                  <p className="mt-3 text-center text-white">
+                <p className="text-center text-xs text-dnx-muted">
+                  @{entry?.user?.nickName || 'No username'}
+                </p>
 
-                    {entry
-                      ?.user
-                      ?.name ||
-                      "Unknown"}
+                <p className="mt-5 text-center text-4xl font-bold text-gradient-gold">
+                  {Math.round(entry?.totalDNXScore || 0)}
+                </p>
 
-                  </p>
-
-                  <p className="text-center text-xs text-dnx-muted">
-
-                    @
-                    {entry
-                      ?.user
-                      ?.nickName ||
-                      "No username"}
-
-                  </p>
-
-                  <p className="mt-5 text-center text-4xl font-bold text-gradient-gold">
-
-                    {Math.round(
-                      entry?.totalDNXScore ||
-                      0
-                    )}
-
-                  </p>
-
-                  <p className="text-center text-xs text-dnx-muted">
-                    DNX score
-                  </p>
-                </div>
-              </motion.div>
-            </Col>
-          )
-        )}
+                <p className="text-center text-xs text-dnx-muted">DNX score</p>
+              </div>
+            </motion.div>
+          </Col>
+        ))}
       </Row>
 
-      <AnimatedChartCard
-        title="Leaderboard"
-        subtitle="Live ranking"
-      >
+      <AnimatedChartCard title="Leaderboard" subtitle="Live ranking">
         <Table
           rowKey="id"
-          dataSource={
-            filtered
-          }
+          dataSource={filtered}
           pagination={{
-            current:
-              page,
+            current: page,
 
-            pageSize:
-              limit,
+            pageSize: limit,
 
-            total:
-              pagination?.total || 0,
+            total: pagination?.total || 0,
 
-            onChange:
-              (
-                current
-              ) =>
-                setPage(
-                  current
-                ),
+            onChange: (current) => setPage(current),
           }}
           columns={[
             {
-              title:
-                "Rank",
+              title: 'Rank',
 
-              dataIndex:
-                "rank",
+              dataIndex: 'rank',
             },
 
             {
-              title:
-                "Athlete",
+              title: 'Athlete',
 
-              render:
-                (
-                  _: any,
-                  row: any
-                ) => (
-                  <div className="flex items-center gap-2">
+              render: (_: any, row: any) => (
+                <div className="flex items-center gap-2">
+                  <Avatar src={row?.user?.profile} />
 
-                    <Avatar
-                      src={
-                        row
-                          ?.user
-                          ?.profile
-                      }
-                    />
+                  <div>
+                    <p>{row?.user?.name || '-'}</p>
 
-                    <div>
-                      <p>
-
-                        {row
-                          ?.user
-                          ?.name ||
-                          "-"}
-
-                      </p>
-
-                      <p className="text-xs text-gray-400">
-
-                        @
-                        {row
-                          ?.user
-                          ?.nickName ||
-                          "-"}
-
-                      </p>
-                    </div>
+                    <p className="text-xs text-gray-400">@{row?.user?.nickName || '-'}</p>
                   </div>
-                ),
+                </div>
+              ),
             },
 
             {
-              title:
-                "Level",
+              title: 'Level',
 
-              dataIndex:
-                "level",
+              dataIndex: 'level',
             },
 
             {
-              title:
-                "Steps",
+              title: 'Steps',
 
-              dataIndex:
-                "totalSteps",
+              dataIndex: 'totalSteps',
             },
 
             {
-              title:
-                "Workout Days",
+              title: 'Workout Days',
 
-              dataIndex:
-                "totalWorkoutDays",
+              dataIndex: 'totalWorkoutDays',
             },
 
             {
-              title:
-                "DNX Score",
+              title: 'DNX Score',
 
-              render:
-                (
-                  _: any,
-                  row: any
-                ) =>
-                  row?.totalDNXScore?.toFixed(
-                    1
-                  ) ||
-                  "0",
+              render: (_: any, row: any) => row?.totalDNXScore?.toFixed(1) || '0',
             },
 
             {
-              title:
-                "Status",
+              title: 'Status',
 
-              render:
-                (
-                  _: any,
-                  _row: any
-                ) => (
-                  <Tag color="green">
-                    Active
-                  </Tag>
-                ),
+              render: (_: any, _row: any) => <Tag color="green">Active</Tag>,
             },
           ]}
         />
       </AnimatedChartCard>
     </div>
-  );
+  )
 }

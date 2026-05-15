@@ -20,13 +20,18 @@ export default function ResetPasswordPage() {
   }, [form, token])
 
   return (
-    <Card className="glass-card border-dnx-border !bg-dnx-card/90 !rounded-[22px]" bordered={false}>
+    <Card
+      className="glass-card border-dnx-border !bg-dnx-card/90 !rounded-[22px]"
+      bordered={false}
+    >
       <Title level={3} className="!mb-2 !font-semibold !text-white">
         Reset passphrase
       </Title>
       <Text type="secondary" className="!text-dnx-muted">
         Token:{' '}
-        <span className="font-mono text-xs text-white/80">{token || 'missing — use emailed link'}</span>
+        <span className="font-mono text-xs text-white/80">
+          {token || 'missing — use emailed link'}
+        </span>
       </Text>
       <Form
         form={form}
@@ -62,7 +67,10 @@ export default function ResetPasswordPage() {
           name="password"
           rules={[{ required: true }, { min: 6, message: 'Min 6 characters' }]}
         >
-          <Input.Password size="large" prefix={<LockOutlined className="text-dnx-muted" />} />
+          <Input.Password
+            size="large"
+            prefix={<LockOutlined className="text-dnx-muted" />}
+          />
         </Form.Item>
         <Form.Item
           label="Confirm"
@@ -72,7 +80,8 @@ export default function ResetPasswordPage() {
             { required: true },
             ({ getFieldValue }) => ({
               validator(_, value) {
-                if (!value || getFieldValue('password') === value) return Promise.resolve()
+                if (!value || getFieldValue('password') === value)
+                  return Promise.resolve()
                 return Promise.reject(new Error('Passphrases must match'))
               },
             }),

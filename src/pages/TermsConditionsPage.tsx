@@ -1,6 +1,9 @@
 import { RuleHtmlPreview } from '@/components/RuleHtmlPreview'
 import { RuleRichTextEditor } from '@/components/RuleRichTextEditor'
-import { useCreateRuleMutation, useGetRuleByTypeQuery } from '@/store/api/dashboardOverViewPage/rule.api'
+import {
+  useCreateRuleMutation,
+  useGetRuleByTypeQuery,
+} from '@/store/api/dashboardOverViewPage/rule.api'
 import type { IRule } from '@/types/rule.types'
 import { useAppMessage } from '@/hooks/useAppMessage'
 import { Alert, Button, Card, Modal, Spin, Typography } from 'antd'
@@ -42,21 +45,23 @@ export default function TermsConditionsPage() {
   }
 
   const rawContent = rule?.data?.content
-  const serverContent =
-    typeof rawContent === 'string' ? rawContent : ''
+  const serverContent = typeof rawContent === 'string' ? rawContent : ''
   const editorValue = draft !== null ? draft : serverContent
 
   const handleSaveChanges = async () => {
     await updateRule({
       content: editorValue,
       type: 'TERMS',
-    } as unknown as IRule).unwrap().then(() => {
-      message.success('Rule updated successfully')
-      setDraft(null)
-      refetch()
-    }).catch((error) => {
-      message.error(error?.data?.message || 'Update failed')
-    })
+    } as unknown as IRule)
+      .unwrap()
+      .then(() => {
+        message.success('Rule updated successfully')
+        setDraft(null)
+        refetch()
+      })
+      .catch((error) => {
+        message.error(error?.data?.message || 'Update failed')
+      })
   }
 
   return (
@@ -77,11 +82,11 @@ export default function TermsConditionsPage() {
           showIcon
           message="Could not load saved terms"
           description={readQueryErrorMessage(loadError)}
-          action={(
+          action={
             <Button size="small" type="primary" onClick={() => void refetch()}>
               Retry
             </Button>
-          )}
+          }
         />
       )}
 
@@ -117,11 +122,7 @@ export default function TermsConditionsPage() {
 
       <div className="flex justify-end gap-3 mt-4">
         <Button onClick={() => setPreview(true)}>Preview</Button>
-        <Button
-          type="primary"
-          onClick={handleSaveChanges}
-          loading={isUpdating}
-        >
+        <Button type="primary" onClick={handleSaveChanges} loading={isUpdating}>
           Save Changes
         </Button>
       </div>

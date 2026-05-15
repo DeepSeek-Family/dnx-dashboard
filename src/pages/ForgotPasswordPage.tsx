@@ -12,7 +12,10 @@ export default function ForgotPasswordPage() {
   const [isLoading, setIsLoading] = useState(false)
 
   return (
-    <Card className="glass-card border-dnx-border !bg-dnx-card/90 !rounded-[22px]" bordered={false}>
+    <Card
+      className="glass-card border-dnx-border !bg-dnx-card/90 !rounded-[22px]"
+      bordered={false}
+    >
       <Title level={3} className="!mb-2 !font-semibold !text-white">
         Recover access
       </Title>

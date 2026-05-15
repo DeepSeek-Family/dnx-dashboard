@@ -25,7 +25,8 @@ const SettingsProfilePanel = ({ user }: { user?: SettingsProfileUser }) => {
     setPreviewUrl('')
   }, [user?.name, form])
 
-  const profileSrc = previewUrl || (user?.profile?.trim() ? getProfileImageUrl(user.profile) : '')
+  const profileSrc =
+    previewUrl || (user?.profile?.trim() ? getProfileImageUrl(user.profile) : '')
 
   const handleUpdateUser = async (values: UpdateProfileFormValues) => {
     const formData = new FormData()
@@ -35,8 +36,7 @@ const SettingsProfilePanel = ({ user }: { user?: SettingsProfileUser }) => {
     }
 
     try {
-      const res = await updateUser(formData).unwrap()
-      console.log("response", res)
+      await updateUser(formData).unwrap()
       message.success('Profile updated successfully')
       setProfileFile(null)
       setPreviewUrl('')
@@ -44,9 +44,9 @@ const SettingsProfilePanel = ({ user }: { user?: SettingsProfileUser }) => {
     } catch (err: unknown) {
       const apiMessage =
         typeof err === 'object' &&
-          err !== null &&
-          'data' in err &&
-          typeof (err as { data?: { message?: unknown } }).data?.message === 'string'
+        err !== null &&
+        'data' in err &&
+        typeof (err as { data?: { message?: unknown } }).data?.message === 'string'
           ? (err as { data: { message: string } }).data.message
           : null
       message.error(apiMessage ?? 'Could not update profile')
@@ -99,12 +99,17 @@ const SettingsProfilePanel = ({ user }: { user?: SettingsProfileUser }) => {
                 </Typography.Title>
                 <Space size="small" className="text-dnx-muted">
                   <MailOutlined className="text-dnx-yellow/80" />
-                  <Typography.Link href={`mailto:${user?.email}`} className="!text-dnx-muted hover:!text-white">
+                  <Typography.Link
+                    href={`mailto:${user?.email}`}
+                    className="!text-dnx-muted hover:!text-white"
+                  >
                     {user?.email}
                   </Typography.Link>
                 </Space>
                 {user?.role ? (
-                  <Typography.Text className="mt-4 text-white">{user.role}</Typography.Text>
+                  <Typography.Text className="mt-4 text-white">
+                    {user.role}
+                  </Typography.Text>
                 ) : null}
               </div>
             </div>
@@ -123,7 +128,10 @@ const SettingsProfilePanel = ({ user }: { user?: SettingsProfileUser }) => {
                 <Form.Item
                   label={<span className="text-dnx-muted">Display name</span>}
                   name="name"
-                  rules={[{ required: true, message: 'Enter your name' }, { whitespace: true, message: 'Enter your name' }]}
+                  rules={[
+                    { required: true, message: 'Enter your name' },
+                    { whitespace: true, message: 'Enter your name' },
+                  ]}
                 >
                   <Input
                     size="large"
@@ -142,7 +150,11 @@ const SettingsProfilePanel = ({ user }: { user?: SettingsProfileUser }) => {
         </>
       ) : (
         <div className="flex flex-col items-center gap-4 px-6 py-14">
-          <Avatar size={96} icon={<UserOutlined />} className="bg-dnx-card text-dnx-muted" />
+          <Avatar
+            size={96}
+            icon={<UserOutlined />}
+            className="bg-dnx-card text-dnx-muted"
+          />
           <Typography.Text type="secondary" className="text-center">
             No signed-in user. Log in to see your profile.
           </Typography.Text>

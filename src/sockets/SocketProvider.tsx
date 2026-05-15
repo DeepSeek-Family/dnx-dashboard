@@ -7,7 +7,12 @@ import { App } from 'antd'
 import { SOCKET_EVENTS } from '@/sockets/events'
 import type { DnxSocketContextValue } from '@/sockets/socket-context'
 import { SocketContext } from '@/sockets/socket-context'
-import type { AlertEventPayload, AthleteSocketPayload, DeviceStatusPayload, SessionUpdatePayload } from '@/types/socket'
+import type {
+  AlertEventPayload,
+  AthleteSocketPayload,
+  DeviceStatusPayload,
+  SessionUpdatePayload,
+} from '@/types/socket'
 
 export function SocketProvider({ children }: { children: ReactNode }) {
   const { notification } = App.useApp()
@@ -38,8 +43,10 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     const onRanking = () => {}
     const onAlert = (payload: AlertEventPayload) => {
       const desc = payload.message
-      if (payload.severity === 'error') notification.error({ message: payload.title, description: desc })
-      else if (payload.severity === 'warning') notification.warning({ message: payload.title, description: desc })
+      if (payload.severity === 'error')
+        notification.error({ message: payload.title, description: desc })
+      else if (payload.severity === 'warning')
+        notification.warning({ message: payload.title, description: desc })
       else if (payload.severity === 'success')
         notification.success({ message: payload.title, description: desc })
       else notification.info({ message: payload.title, description: desc })

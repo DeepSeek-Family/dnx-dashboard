@@ -1,7 +1,4 @@
-export type SupportTicketStatus =
-  | 'PENDING'
-  | 'RESOLVED'
-  | 'CLOSED'
+export type SupportTicketStatus = 'PENDING' | 'RESOLVED' | 'CLOSED'
 
 export interface ISupport {
   id: string

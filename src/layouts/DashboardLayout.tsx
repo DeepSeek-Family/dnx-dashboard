@@ -11,12 +11,11 @@ import {
   UserSwitchOutlined,
   WalletOutlined,
 } from '@ant-design/icons'
-import { Drawer, Dropdown, Grid, Layout, Menu, Spin, type MenuProps } from 'antd'
+import { Drawer, Dropdown, Grid, Layout, Menu, message, Spin, type MenuProps } from 'antd'
 import { motion } from 'framer-motion'
 import { useMemo, useState } from 'react'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 
-import { useAuthSession } from '@/context/AuthSessionContext'
 import { ROUTES } from '@/constants/routes'
 import { getProfileImageUrl } from '@/shared/getImageUrl'
 import { useGetUserQuery } from '@/store/api/auth.api'
@@ -24,15 +23,51 @@ import { useGetUserQuery } from '@/store/api/auth.api'
 const { Header, Sider, Content } = Layout
 
 const navItems: MenuProps['items'] = [
-  { key: ROUTES.dashboard, icon: <DashboardOutlined />, label: <Link to={ROUTES.dashboard}>Dashboard Overview</Link> },
-  { key: ROUTES.rankings, icon: <TrophyOutlined />, label: <Link to={ROUTES.rankings}>Rankings</Link> },
-  { key: ROUTES.users, icon: <TeamOutlined />, label: <Link to={ROUTES.users}>User Management</Link> },
-  { key: ROUTES.gyms, icon: <DeploymentUnitOutlined />, label: <Link to={ROUTES.gyms}>Gym Management</Link> },
-  { key: ROUTES.subscriptions, icon: <WalletOutlined />, label: <Link to={ROUTES.subscriptions}>Subscription</Link> },
-  { key: ROUTES.support, icon: <CustomerServiceOutlined />, label: <Link to={ROUTES.support}>Support</Link> },
-  { key: ROUTES.terms, icon: <SafetyOutlined />, label: <Link to={ROUTES.terms}>Terms & Conditions</Link> },
-  { key: ROUTES.privacy, icon: <UserSwitchOutlined />, label: <Link to={ROUTES.privacy}>Privacy Policy</Link> },
-  { key: ROUTES.settings, icon: <SettingOutlined />, label: <Link to={ROUTES.settings}>Settings</Link> },
+  {
+    key: ROUTES.dashboard,
+    icon: <DashboardOutlined />,
+    label: <Link to={ROUTES.dashboard}>Dashboard Overview</Link>,
+  },
+  {
+    key: ROUTES.rankings,
+    icon: <TrophyOutlined />,
+    label: <Link to={ROUTES.rankings}>Rankings</Link>,
+  },
+  {
+    key: ROUTES.users,
+    icon: <TeamOutlined />,
+    label: <Link to={ROUTES.users}>User Management</Link>,
+  },
+  {
+    key: ROUTES.gyms,
+    icon: <DeploymentUnitOutlined />,
+    label: <Link to={ROUTES.gyms}>Gym Management</Link>,
+  },
+  {
+    key: ROUTES.subscriptions,
+    icon: <WalletOutlined />,
+    label: <Link to={ROUTES.subscriptions}>Subscription</Link>,
+  },
+  {
+    key: ROUTES.support,
+    icon: <CustomerServiceOutlined />,
+    label: <Link to={ROUTES.support}>Support</Link>,
+  },
+  {
+    key: ROUTES.terms,
+    icon: <SafetyOutlined />,
+    label: <Link to={ROUTES.terms}>Terms & Conditions</Link>,
+  },
+  {
+    key: ROUTES.privacy,
+    icon: <UserSwitchOutlined />,
+    label: <Link to={ROUTES.privacy}>Privacy Policy</Link>,
+  },
+  {
+    key: ROUTES.settings,
+    icon: <SettingOutlined />,
+    label: <Link to={ROUTES.settings}>Settings</Link>,
+  },
 ]
 
 export function DashboardLayout() {
@@ -42,7 +77,7 @@ export function DashboardLayout() {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const location = useLocation()
   const nav = useNavigate()
-  const { logout } = useAuthSession()
+
   const mobile = !screens.lg
 
   const selectedKey = useMemo(() => {
@@ -63,6 +98,12 @@ export function DashboardLayout() {
   )
   if (isLoading) {
     return <Spin className="flex justify-center items-center h-full" />
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    nav(ROUTES.login)
+    message.success('Logged out successfully')
   }
 
   return (
@@ -87,7 +128,6 @@ export function DashboardLayout() {
             )}
           </div>
           {menuNode}
-
         </Sider>
       )}
       <Layout>
@@ -114,10 +154,9 @@ export function DashboardLayout() {
                   {
                     key: 'out',
                     danger: true,
-                    label: 'Terminate session',
+                    label: 'Logout',
                     onClick: () => {
-                      logout()
-                      nav(ROUTES.login)
+                      handleLogout()
                     },
                   },
                 ],
@@ -127,8 +166,11 @@ export function DashboardLayout() {
                 type="button"
                 className="flex items-center gap-2 rounded-2xl border border-dnx-border bg-dnx-card px-3 py-1.5"
               >
-
-                <img src={getProfileImageUrl(userData?.data?.profile)} alt="" className="w-8 h-8 rounded-full" />
+                <img
+                  src={getProfileImageUrl(userData?.data?.profile)}
+                  alt=""
+                  className="w-8 h-8 rounded-full"
+                />
               </button>
             </Dropdown>
           </div>

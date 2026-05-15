@@ -152,7 +152,7 @@ export default function SubscriptionsPage() {
       status: v.status,
       features: v.features ?? [],
       trialEnabled: !!v.trialEnabled,
-      trialDays: v.trialEnabled ? v.trialDays ?? 7 : 0,
+      trialDays: v.trialEnabled ? (v.trialDays ?? 7) : 0,
     }
     setPlans((prev) => [row, ...prev])
     message.success('Subscription created.')
@@ -204,7 +204,7 @@ export default function SubscriptionsPage() {
               features: v.features ?? [],
               status: v.status,
               trialEnabled: !!v.trialEnabled,
-              trialDays: v.trialEnabled ? v.trialDays ?? 7 : 0,
+              trialDays: v.trialEnabled ? (v.trialDays ?? 7) : 0,
             }
           : p,
       ),
@@ -238,9 +238,18 @@ export default function SubscriptionsPage() {
       title: 'Actions',
       render: (_, r) => (
         <div className="flex flex-wrap gap-2">
-          <Button size="small" icon={<SettingOutlined />} onClick={() => openManage(r.id)} />
+          <Button
+            size="small"
+            icon={<SettingOutlined />}
+            onClick={() => openManage(r.id)}
+          />
           <Button size="small" icon={<EditOutlined />} onClick={() => openEdit(r)} />
-          <Button size="small" danger icon={<DeleteOutlined />} onClick={() => deletePlan(r)} />
+          <Button
+            size="small"
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => deletePlan(r)}
+          />
         </div>
       ),
     },
@@ -252,8 +261,12 @@ export default function SubscriptionsPage() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-[11px] uppercase-tracking text-dnx-muted">Subscription</p>
-          <h1 className="mt-2 text-3xl font-semibold text-white">Subscription Management</h1>
-          <p className="mt-2 text-dnx-muted">Manage subscription plans, pricing, and access permissions.</p>
+          <h1 className="mt-2 text-3xl font-semibold text-white">
+            Subscription Management
+          </h1>
+          <p className="mt-2 text-dnx-muted">
+            Manage subscription plans, pricing, and access permissions.
+          </p>
         </div>
 
         <Button
@@ -308,7 +321,9 @@ export default function SubscriptionsPage() {
 
       {/* Subscription management table */}
       <div>
-        <p className="text-[11px] uppercase-tracking text-dnx-muted">Subscription Management</p>
+        <p className="text-[11px] uppercase-tracking text-dnx-muted">
+          Subscription Management
+        </p>
         <div className="mt-4 glass-card rounded-[24px] border border-dnx-border/80 p-5">
           <Table<PlanRow>
             rowKey="id"
@@ -377,7 +392,10 @@ export default function SubscriptionsPage() {
             </Form.Item>
           </div>
 
-          <Form.Item name="features" label={<span className="text-dnx-muted">Features</span>}>
+          <Form.Item
+            name="features"
+            label={<span className="text-dnx-muted">Features</span>}
+          >
             <Select
               mode="multiple"
               size="large"
@@ -394,7 +412,10 @@ export default function SubscriptionsPage() {
             >
               <Switch />
             </Form.Item>
-            <Form.Item name="trialDays" label={<span className="text-dnx-muted">Trial Days</span>}>
+            <Form.Item
+              name="trialDays"
+              label={<span className="text-dnx-muted">Trial Days</span>}
+            >
               <InputNumber size="large" className="w-full !rounded-2xl" min={0} />
             </Form.Item>
           </div>
@@ -455,7 +476,10 @@ export default function SubscriptionsPage() {
             </Form.Item>
           </div>
 
-          <Form.Item name="features" label={<span className="text-dnx-muted">Features</span>}>
+          <Form.Item
+            name="features"
+            label={<span className="text-dnx-muted">Features</span>}
+          >
             <Select
               mode="multiple"
               size="large"
@@ -472,7 +496,10 @@ export default function SubscriptionsPage() {
             >
               <Switch />
             </Form.Item>
-            <Form.Item name="trialDays" label={<span className="text-dnx-muted">Trial Days</span>}>
+            <Form.Item
+              name="trialDays"
+              label={<span className="text-dnx-muted">Trial Days</span>}
+            >
               <InputNumber size="large" className="w-full !rounded-2xl" min={0} />
             </Form.Item>
           </div>
@@ -513,13 +540,18 @@ export default function SubscriptionsPage() {
             </div>
 
             <div className="glass-card rounded-[20px] border border-dnx-border/80 p-4">
-              <p className="text-[11px] uppercase-tracking text-dnx-muted">Enabled features</p>
+              <p className="text-[11px] uppercase-tracking text-dnx-muted">
+                Enabled features
+              </p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {activePlan.features.length === 0 ? (
                   <span className="text-dnx-muted">No features enabled.</span>
                 ) : (
                   activePlan.features.map((f) => (
-                    <Tag key={f} className="rounded-full border-dnx-border bg-dnx-card text-white/80">
+                    <Tag
+                      key={f}
+                      className="rounded-full border-dnx-border bg-dnx-card text-white/80"
+                    >
                       {f}
                     </Tag>
                   ))
@@ -531,26 +563,38 @@ export default function SubscriptionsPage() {
               <p className="text-[11px] uppercase-tracking text-dnx-muted">Trials</p>
               <p className="mt-2 text-sm text-white">
                 Trial:{' '}
-                <span className={activePlan.trialEnabled ? 'text-dnx-yellow' : 'text-dnx-muted'}>
+                <span
+                  className={
+                    activePlan.trialEnabled ? 'text-dnx-yellow' : 'text-dnx-muted'
+                  }
+                >
                   {activePlan.trialEnabled ? 'Enabled' : 'Disabled'}
                 </span>
               </p>
               {activePlan.trialEnabled && (
-                <p className="mt-1 text-sm text-dnx-muted">Trial days: {activePlan.trialDays}</p>
+                <p className="mt-1 text-sm text-dnx-muted">
+                  Trial days: {activePlan.trialDays}
+                </p>
               )}
             </div>
 
             <div className="glass-card rounded-[20px] border border-dnx-border/80 p-4">
-              <p className="text-[11px] uppercase-tracking text-dnx-muted">Active users</p>
+              <p className="text-[11px] uppercase-tracking text-dnx-muted">
+                Active users
+              </p>
               <p className="mt-2 text-sm text-white">
-                Subscribers: <span className="text-dnx-yellow">{activePlan.subscribers}</span>
+                Subscribers:{' '}
+                <span className="text-dnx-yellow">{activePlan.subscribers}</span>
               </p>
             </div>
 
             <div className="glass-card rounded-[20px] border border-dnx-border/80 p-4">
-              <p className="text-[11px] uppercase-tracking text-dnx-muted">Billing settings</p>
+              <p className="text-[11px] uppercase-tracking text-dnx-muted">
+                Billing settings
+              </p>
               <p className="mt-2 text-sm text-white">
-                {activePlan.billing} billing · Price: <span className="text-dnx-yellow">{money(activePlan.price)}</span>
+                {activePlan.billing} billing · Price:{' '}
+                <span className="text-dnx-yellow">{money(activePlan.price)}</span>
               </p>
             </div>
           </div>

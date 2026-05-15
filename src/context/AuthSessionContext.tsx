@@ -1,8 +1,20 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from 'react'
 
 import type { AuthUser } from '@/types/auth'
 import { clearStoredAuth } from '@/services/auth/tokenStorage'
-import { getFromLocalStorage, removeFromLocalStorage, TOKEN_STORAGE_KEY } from '@/utils/local-storage'
+import {
+  getFromLocalStorage,
+  removeFromLocalStorage,
+  TOKEN_STORAGE_KEY,
+} from '@/utils/local-storage'
 import { userFromAccessToken } from '@/utils/auth-session'
 
 type AuthSessionValue = {
@@ -70,7 +82,9 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
     [hydrated, token, user, logout, refresh],
   )
 
-  return <AuthSessionContext.Provider value={value}>{children}</AuthSessionContext.Provider>
+  return (
+    <AuthSessionContext.Provider value={value}>{children}</AuthSessionContext.Provider>
+  )
 }
 
 // eslint-disable-next-line react-refresh/only-export-components -- hook colocated with provider

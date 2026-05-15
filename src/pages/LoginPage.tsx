@@ -16,7 +16,8 @@ export default function LoginPage() {
   const { refresh } = useAuthSession()
 
   const handleLogin = async (values: { email: string; password: string }) => {
-    await loginMutation({ email: values.email, password: values.password }).unwrap()
+    await loginMutation({ email: values.email, password: values.password })
+      .unwrap()
       .then((res) => {
         setToLocalStorage(TOKEN_STORAGE_KEY, res.data.accessToken)
         refresh()
@@ -28,11 +29,15 @@ export default function LoginPage() {
       })
   }
 
-
   return (
-    <Card className="glass-card border-dnx-border !bg-dnx-card/90 !rounded-[22px]" bordered={false}>
+    <Card
+      className="glass-card border-dnx-border !bg-dnx-card/90 !rounded-[22px]"
+      bordered={false}
+    >
       <div className="mb-8">
-        <p className="text-[11px] uppercase-tracking text-dnx-muted">DNX biometric operations</p>
+        <p className="text-[11px] uppercase-tracking text-dnx-muted">
+          DNX biometric operations
+        </p>
         <Title level={3} className="!mb-2 !mt-4 !font-semibold !text-white">
           Command access
         </Title>
@@ -40,22 +45,25 @@ export default function LoginPage() {
           Biometric console preview mode.
         </Text>
       </div>
-      <Form
-        layout="vertical"
-        requiredMark={false}
-        onFinish={handleLogin}
-      >
+      <Form layout="vertical" requiredMark={false} onFinish={handleLogin}>
         <Form.Item
           label={<span className="text-dnx-muted">Operations email</span>}
           name="email"
         >
-          <Input size="large" prefix={<MailOutlined className="text-dnx-muted" />} placeholder="yourmail@dnx.lab" />
+          <Input
+            size="large"
+            prefix={<MailOutlined className="text-dnx-muted" />}
+            placeholder="yourmail@dnx.lab"
+          />
         </Form.Item>
         <Form.Item
           label={<span className="text-dnx-muted">Passphrase</span>}
           name="password"
         >
-          <Input.Password size="large" prefix={<LockOutlined className="text-dnx-muted" />} />
+          <Input.Password
+            size="large"
+            prefix={<LockOutlined className="text-dnx-muted" />}
+          />
         </Form.Item>
         <div className="mb-6 flex justify-between text-sm">
           <Link to={ROUTES.forgotPassword} className="text-dnx-yellow hover:text-white">

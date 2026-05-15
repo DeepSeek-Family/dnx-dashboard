@@ -1,7 +1,4 @@
-import {
-  EllipsisOutlined,
-  EyeOutlined,
-} from '@ant-design/icons'
+import { EllipsisOutlined, EyeOutlined } from '@ant-design/icons'
 import {
   App,
   Button,
@@ -25,22 +22,16 @@ import {
   useGetAllSupportTicketsQuery,
   useUpdateSupportTicketMutation,
 } from '@/store/api/dashboardOverViewPage/support.api'
-import type {
-  ISupport,
-  SupportTicketStatus,
-} from '@/types/supportTypes'
+import type { ISupport, SupportTicketStatus } from '@/types/supportTypes'
 
 export default function SupportPage() {
   const { message } = App.useApp()
 
-  const [statusFilter, setStatusFilter] =
-    useState<SupportTicketStatus | 'ALL'>('ALL')
+  const [statusFilter, setStatusFilter] = useState<SupportTicketStatus | 'ALL'>('ALL')
 
-  const [detailTicket, setDetailTicket] =
-    useState<ISupport | null>(null)
+  const [detailTicket, setDetailTicket] = useState<ISupport | null>(null)
 
-  const [statusActionRowId, setStatusActionRowId] =
-    useState<string | null>(null)
+  const [statusActionRowId, setStatusActionRowId] = useState<string | null>(null)
 
   const [listQuery, setListQuery] = useState({
     page: 1,
@@ -53,8 +44,7 @@ export default function SupportPage() {
     refetch,
   } = useGetAllSupportTicketsQuery(listQuery)
 
-  const [updateTicket, { isLoading: updatingTicket }] =
-    useUpdateSupportTicketMutation()
+  const [updateTicket, { isLoading: updatingTicket }] = useUpdateSupportTicketMutation()
 
   const supportData = supportTickets?.data ?? []
   const serverPagination = supportTickets?.pagination
@@ -63,15 +53,10 @@ export default function SupportPage() {
     if (statusFilter === 'ALL') {
       return supportData
     }
-    return supportData.filter(
-      (ticket) => ticket.status === statusFilter
-    )
+    return supportData.filter((ticket) => ticket.status === statusFilter)
   }, [supportData, statusFilter])
 
-  const handleUpdateStatus = async (
-    id: string,
-    status: SupportTicketStatus
-  ) => {
+  const handleUpdateStatus = async (id: string, status: SupportTicketStatus) => {
     setStatusActionRowId(id)
     try {
       await updateTicket({ id, status }).unwrap()
@@ -81,9 +66,7 @@ export default function SupportPage() {
       const err = error as {
         data?: { message?: string }
       }
-      message.error(
-        err?.data?.message ?? 'Failed to update ticket'
-      )
+      message.error(err?.data?.message ?? 'Failed to update ticket')
     } finally {
       setStatusActionRowId(null)
     }
@@ -93,7 +76,6 @@ export default function SupportPage() {
     return <Spin description="Loading..." />
   }
 
-
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -102,15 +84,10 @@ export default function SupportPage() {
             Support
           </Typography.Text>
 
-          <Typography.Title
-            level={2}
-            className="!mb-1 !mt-2 !text-white"
-          >
+          <Typography.Title level={2} className="!mb-1 !mt-2 !text-white">
             Ticket command center
           </Typography.Title>
         </div>
-
-
       </div>
 
       <div className="glass-card rounded-[20px] border border-dnx-border/80 p-4">
@@ -149,31 +126,31 @@ export default function SupportPage() {
             pagination={
               statusFilter === 'ALL'
                 ? {
-                  current: serverPagination?.page ?? listQuery.page,
-                  pageSize: serverPagination?.limit ?? listQuery.limit,
-                  total: serverPagination?.total ?? 0,
-                  showSizeChanger: true,
-                  pageSizeOptions: [10, 20, 50],
-                  showTotal: (total, range) =>
-                    `${range[0]}-${range[1]} of ${total} tickets`,
-                  onChange: (page, pageSize) => {
-                    setListQuery({ page, limit: pageSize })
-                  },
-                }
+                    current: serverPagination?.page ?? listQuery.page,
+                    pageSize: serverPagination?.limit ?? listQuery.limit,
+                    total: serverPagination?.total ?? 0,
+                    showSizeChanger: true,
+                    pageSizeOptions: [10, 20, 50],
+                    showTotal: (total, range) =>
+                      `${range[0]}-${range[1]} of ${total} tickets`,
+                    onChange: (page, pageSize) => {
+                      setListQuery({ page, limit: pageSize })
+                    },
+                  }
                 : {
-                  pageSize: listQuery.limit,
-                  showSizeChanger: true,
-                  pageSizeOptions: [10, 20, 50],
-                  showTotal: (total, range) =>
-                    `${range[0]}-${range[1]} of ${total} (this page)`,
-                  onShowSizeChange: (_current, size) => {
-                    setListQuery((q) => ({
-                      ...q,
-                      limit: size,
-                      page: 1,
-                    }))
-                  },
-                }
+                    pageSize: listQuery.limit,
+                    showSizeChanger: true,
+                    pageSizeOptions: [10, 20, 50],
+                    showTotal: (total, range) =>
+                      `${range[0]}-${range[1]} of ${total} (this page)`,
+                    onShowSizeChange: (_current, size) => {
+                      setListQuery((q) => ({
+                        ...q,
+                        limit: size,
+                        page: 1,
+                      }))
+                    },
+                  }
             }
             columns={[
               {
@@ -199,54 +176,24 @@ export default function SupportPage() {
               {
                 title: 'Status',
                 dataIndex: 'status',
-                render: (
-                  s: string
-                ) => {
+                render: (s: string) => {
                   const color =
-                    s ===
-                      'PENDING'
-                      ? 'gold'
-                      : s ===
-                        'RESOLVED'
-                        ? 'green'
-                        : 'red'
+                    s === 'PENDING' ? 'gold' : s === 'RESOLVED' ? 'green' : 'red'
 
-                  return (
-                    <Tag
-                      color={
-                        color
-                      }
-                    >
-                      {s}
-                    </Tag>
-                  )
+                  return <Tag color={color}>{s}</Tag>
                 },
               },
 
               {
-                title:
-                  'Created',
-                dataIndex:
-                  'createdAt',
-                render: (
-                  v: string
-                ) =>
-                  new Date(
-                    v
-                  ).toLocaleString(),
+                title: 'Created',
+                dataIndex: 'createdAt',
+                render: (v: string) => new Date(v).toLocaleString(),
               },
 
               {
-                title:
-                  'Updated',
-                dataIndex:
-                  'updatedAt',
-                render: (
-                  v: string
-                ) =>
-                  new Date(
-                    v
-                  ).toLocaleString(),
+                title: 'Updated',
+                dataIndex: 'updatedAt',
+                render: (v: string) => new Date(v).toLocaleString(),
               },
 
               // actions column
@@ -254,28 +201,23 @@ export default function SupportPage() {
                 title: 'Actions',
                 key: 'actions',
                 render: (_, record: ISupport) => {
-                  const rowBusy =
-                    updatingTicket &&
-                    statusActionRowId === record?.id
+                  const rowBusy = updatingTicket && statusActionRowId === record?.id
 
                   const items = [
                     {
                       key: 'pending',
                       label: 'Mark Pending',
-                      onClick: () =>
-                        handleUpdateStatus(record?.id, 'PENDING'),
+                      onClick: () => handleUpdateStatus(record?.id, 'PENDING'),
                     },
                     {
                       key: 'resolved',
                       label: 'Mark Resolved',
-                      onClick: () =>
-                        handleUpdateStatus(record?.id, 'RESOLVED'),
+                      onClick: () => handleUpdateStatus(record?.id, 'RESOLVED'),
                     },
                     {
                       key: 'closed',
                       label: 'Close Ticket',
-                      onClick: () =>
-                        handleUpdateStatus(record?.id, 'CLOSED'),
+                      onClick: () => handleUpdateStatus(record?.id, 'CLOSED'),
                     },
                   ]
 
@@ -284,11 +226,8 @@ export default function SupportPage() {
                       <Button
                         type="default"
                         icon={<EyeOutlined />}
-                        onClick={() =>
-                          setDetailTicket(record)
-                        }
-                      >
-                      </Button>
+                        onClick={() => setDetailTicket(record)}
+                      ></Button>
                       <Dropdown
                         menu={{ items }}
                         trigger={['click']}
@@ -320,20 +259,10 @@ export default function SupportPage() {
       >
         {detailTicket && (
           <div className="space-y-4">
-            <Descriptions
-              column={1}
-              size="small"
-              bordered
-            >
-              <Descriptions.Item label="User">
-                {detailTicket.name}
-              </Descriptions.Item>
-              <Descriptions.Item label="Email">
-                {detailTicket.email}
-              </Descriptions.Item>
-              <Descriptions.Item label="Phone">
-                {detailTicket.phone}
-              </Descriptions.Item>
+            <Descriptions column={1} size="small" bordered>
+              <Descriptions.Item label="User">{detailTicket.name}</Descriptions.Item>
+              <Descriptions.Item label="Email">{detailTicket.email}</Descriptions.Item>
+              <Descriptions.Item label="Phone">{detailTicket.phone}</Descriptions.Item>
               <Descriptions.Item label="Subject">
                 {detailTicket.subject}
               </Descriptions.Item>
@@ -351,14 +280,10 @@ export default function SupportPage() {
                 </Tag>
               </Descriptions.Item>
               <Descriptions.Item label="Created">
-                {new Date(
-                  detailTicket.createdAt
-                ).toLocaleString()}
+                {new Date(detailTicket.createdAt).toLocaleString()}
               </Descriptions.Item>
               <Descriptions.Item label="Updated">
-                {new Date(
-                  detailTicket.updatedAt
-                ).toLocaleString()}
+                {new Date(detailTicket.updatedAt).toLocaleString()}
               </Descriptions.Item>
               <Descriptions.Item label="Message">
                 <Typography.Paragraph className="!mb-0 whitespace-pre-wrap">

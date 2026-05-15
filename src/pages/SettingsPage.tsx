@@ -9,10 +9,6 @@ import SettingsProfilePanel from '@/components/SettingsProfilePanel'
 
 type SettingsSection = 'profile' | 'password'
 
-
-
-
-
 const sideMenuItems: MenuProps['items'] = [
   { key: 'profile', icon: <UserOutlined />, label: 'Profile' },
   { key: 'password', icon: <LockOutlined />, label: 'Change password' },
@@ -25,7 +21,9 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <Typography.Text className="text-[11px] uppercase-tracking text-dnx-muted">Settings</Typography.Text>
+        <Typography.Text className="text-[11px] uppercase-tracking text-dnx-muted">
+          Settings
+        </Typography.Text>
         <Typography.Title level={2} className="!mb-1 !mt-2 !text-white">
           Account
         </Typography.Title>
