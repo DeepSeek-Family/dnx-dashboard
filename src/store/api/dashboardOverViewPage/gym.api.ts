@@ -21,13 +21,15 @@ export type GymListResponse = {
 const gymApi = dnxApi.injectEndpoints({
   endpoints: (build) => ({
     getGyms: build.query<GymListResponse, GymListParams>({
-      query: (params) => {
-        return {
-          url: '/gyms/admin',
-          method: 'GET',
-          params,
-        }
-      },
+      query: ({ page = 1, limit = 10, searchTerm }) => ({
+        url: '/gyms/admin',
+        method: 'GET',
+        params: {
+          page,
+          limit,
+          ...(searchTerm?.trim() ? { searchTerm: searchTerm.trim() } : {}),
+        },
+      }),
     }),
     updateGym: build.mutation({
       query: (gym) => ({

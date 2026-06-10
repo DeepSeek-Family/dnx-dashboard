@@ -60,10 +60,19 @@ export default function GymManagementPage() {
 
   const [form] = Form.useForm()
 
-  const { data: gymsResponse, isLoading, refetch } = useGetGymsQuery({
-    ...listQuery,
-    searchTerm: debouncedSearchTerm,
-  })
+  const gymQueryParams = useMemo(
+    () => ({
+      page: listQuery.page,
+      limit: listQuery.limit,
+      ...(debouncedSearchTerm.trim()
+        ? { searchTerm: debouncedSearchTerm.trim() }
+        : {}),
+    }),
+    [listQuery.page, listQuery.limit, debouncedSearchTerm],
+  )
+
+  const { data: gymsResponse, isLoading, isFetching, refetch } =
+    useGetGymsQuery(gymQueryParams)
 
   const [addGym, { isLoading: addingGym }] = useAddGymMutation()
 
@@ -177,13 +186,14 @@ export default function GymManagementPage() {
         />
       </div>
 
-      <div className="glass-card overflow-x-auto rounded-[20px] border border-dnx-border/80">
+      <div className="glass-card rounded-[20px] border border-dnx-border/80">
         <Table
           rowKey="id"
           loading={isLoading}
           dataSource={gyms}
           pagination={false}
-          className="[&_.ant-table]:!bg-transparent"
+          scroll={{ x: 'max-content' }}
+          className="[&_.ant-table]:!bg-transparent [&_.ant-table-body]:!overflow-y-hidden [&_.ant-table-cell-scrollbar]:!hidden"
           columns={[
           {
             title: 'Gym Name',
@@ -285,9 +295,10 @@ export default function GymManagementPage() {
         </Typography.Text>
 
         <Pagination
-          current={serverPagination?.page ?? listQuery.page}
-          pageSize={serverPagination?.limit ?? listQuery.limit}
+          current={listQuery.page}
+          pageSize={listQuery.limit}
           total={serverPagination?.total ?? 0}
+          disabled={isFetching}
           showSizeChanger
           pageSizeOptions={[10, 20, 50]}
           showTotal={(total, range) => `${range[0]}-${range[1]} of ${total}`}
