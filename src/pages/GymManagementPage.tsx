@@ -162,8 +162,16 @@ export default function GymManagementPage() {
           },
 
           {
+            title: 'Country',
+            dataIndex: 'country',
+          },
+          {
             title: 'City',
             dataIndex: 'city',
+          },
+          {
+            title: 'State',
+            dataIndex: 'state',
           },
 
           {
