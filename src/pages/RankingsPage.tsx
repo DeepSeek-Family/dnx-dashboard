@@ -160,6 +160,10 @@ export default function RankingsPage() {
               render: (_: any, row: any) => row?.user?.gym?.gymName || '-',
             },
             {
+              title: 'Country',
+              render: (_: any, row: any) => row?.user?.gym?.country || '-',
+            },
+            {
               title: 'City',
               render: (_: any, row: any) => row?.user?.gym?.city || '-',
             },
@@ -167,10 +171,7 @@ export default function RankingsPage() {
               title: 'State',
               render: (_: any, row: any) => row?.user?.gym?.state || '-',
             },
-            {
-              title: 'Country',
-              render: (_: any, row: any) => row?.user?.gym?.country || '-',
-            },
+
             {
               title: 'DNX Score',
               render: (_: any, row: any) => row?.totalDNXScore?.toFixed(1) || '0',
