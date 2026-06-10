@@ -1,9 +1,9 @@
 import { dnxApi } from '../dnxApi'
 
-export type ManagedUserProfile = {
+export type ManagedUser = {
+  id: string
   name: string
   email: string
-  profile: string
   gender: string
   age: number
   weight: number
@@ -12,17 +12,38 @@ export type ManagedUserProfile = {
   role: string
   nickName: string
   isBanned: boolean
+}
+
+export type ManagedUserProfile = ManagedUser & {
+  profile: string
   isDeleted: boolean
   isResetPassword: boolean
   oneTimeCode: number
   expireAt: string
 }
 
+export type UserManagementListParams = {
+  page?: number
+  limit?: number
+  searchTerm?: string
+}
 
+export type UserManagementListResponse = {
+  data: ManagedUser[]
+  pagination: {
+    page: number
+    limit: number
+    total: number
+    totalPage: number
+  }
+}
 
 export const userManagementApi = dnxApi.injectEndpoints({
   endpoints: (build) => ({
-    getUserManagement: build.query({
+    getUserManagement: build.query<
+      UserManagementListResponse,
+      UserManagementListParams
+    >({
       query: (params) => ({
         url: '/user-management/all-users',
         method: 'GET',
@@ -52,5 +73,9 @@ export const userManagementApi = dnxApi.injectEndpoints({
   }),
 })
 
-export const { useGetUserManagementQuery, useGetSingleUserQuery, useBanUserMutation } =
-  userManagementApi
+export const {
+  useGetUserManagementQuery,
+  useLazyGetUserManagementQuery,
+  useGetSingleUserQuery,
+  useBanUserMutation,
+} = userManagementApi

@@ -284,6 +284,18 @@ export default function GymManagementPage() {
           </Form.Item>
 
           <Form.Item
+            name="country"
+            label="Country"
+            rules={[
+              {
+                required: true,
+                message: 'Country is required',
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
             name="city"
             label="City"
             rules={[
@@ -295,6 +307,19 @@ export default function GymManagementPage() {
           >
             <Input />
           </Form.Item>
+          <Form.Item
+            name="state"
+            label="State"
+            rules={[
+              {
+                required: true,
+                message: 'State is required',
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+
 
           {editingGym && (
             <Form.Item

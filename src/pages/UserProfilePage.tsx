@@ -29,7 +29,7 @@ export default function UserProfilePage() {
   const { id } = useParams()
 
   const {
-    data: user, isLoading,} = useGetSingleUserQuery(id as string)
+    data: user, isLoading, } = useGetSingleUserQuery(id as string)
 
   if (!id) {
     return (
@@ -46,7 +46,12 @@ export default function UserProfilePage() {
       </div>
     )
   }
-
+  const fakeJson = {
+    packageName: 'Pro Monthly',
+    price: '$299',
+    status: 'Active',
+    expiresAt: '2026-06-10',
+  }
 
 
   return (
@@ -100,6 +105,40 @@ export default function UserProfilePage() {
           </Col>
         </Row>
       </div>
+      {/* Subscription detils if have package name and price and status expires at  */}
+      {/* fake json data */}
+
+      <div>
+        {fakeJson && (
+          <Card className="glass-card border-dnx-border bg-dnx-card">
+            <Text className="text-dnx-muted">Subscription details</Text>
+            <Descriptions
+              bordered
+              size="small"
+              column={{ xs: 1, sm: 1, md: 2, lg: 2 }}
+              className="!mt-4 [&_.ant-descriptions-item-label]:!text-dnx-muted [&_.ant-descriptions-view]:!bg-transparent"
+            >
+              <Descriptions.Item label="Subscription status">
+                {fakeJson.status ?? '—'}
+              </Descriptions.Item>
+              <Descriptions.Item label="Package name">
+                {fakeJson.packageName ?? '—'}
+              </Descriptions.Item>
+              <Descriptions.Item label="Price">
+                {fakeJson.price ?? '—'}
+              </Descriptions.Item>
+              <Descriptions.Item label="Expires at">
+                {fakeJson.expiresAt ?? '—'}
+              </Descriptions.Item>
+              <Descriptions.Item label="Status">
+                <Tag color={fakeJson.status === 'Active' ? 'green' : 'red'}>
+                  {fakeJson.status ?? '—'}
+                </Tag>
+              </Descriptions.Item>
+            </Descriptions>
+          </Card>
+        )}
+      </div>
 
       <Card className="glass-card border-dnx-border bg-dnx-card">
         <Text className="text-dnx-muted">Profile details</Text>
@@ -144,13 +183,7 @@ export default function UserProfilePage() {
             {user?.isResetPassword ? 'Active' : 'Inactive'}
           </Descriptions.Item>
 
-          <Descriptions.Item label="One-time code">
-            {user?.oneTimeCode ?? '—'}
-          </Descriptions.Item>
 
-          <Descriptions.Item label="Code expires">
-            {user?.expireAt ? new Date(user?.expireAt).toLocaleString() : '—'}
-          </Descriptions.Item>
         </Descriptions>
       </Card>
 
