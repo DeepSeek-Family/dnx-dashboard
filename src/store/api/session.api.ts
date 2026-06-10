@@ -15,4 +15,4 @@ const sessionApi = dnxApi.injectEndpoints({
   }),
 })
 
-export const { useGetSessionQuery } = sessionApi
+export const { useGetSessionQuery, useLazyGetSessionQuery } = sessionApi

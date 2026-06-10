@@ -1,15 +1,22 @@
-import { SearchOutlined } from '@ant-design/icons'
-import { Avatar, Col, Input, Row, Spin, Table, Tag } from 'antd'
+import { FileExcelOutlined, FilePdfOutlined, SearchOutlined } from '@ant-design/icons'
+import { Avatar, Button, Col, Input, Row, Spin, Table, Tag } from 'antd'
 import { motion } from 'framer-motion'
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
+import toast from 'react-hot-toast'
 
 import { AnimatedChartCard } from '@/components/AnimatedChartCard'
 
-import { useGetSessionQuery } from '@/store/api/session.api'
+import { useGetSessionQuery, useLazyGetSessionQuery } from '@/store/api/session.api'
+import {
+  exportRankingsToExcel,
+  exportRankingsToPdf,
+  type RankingExportEntry,
+} from '@/utils/exportRankingReport'
 
 export default function RankingsPage() {
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
+  const [exporting, setExporting] = useState<'excel' | 'pdf' | null>(null)
 
   const limit = 20
 
@@ -17,6 +24,7 @@ export default function RankingsPage() {
     page,
     limit,
   })
+  const [fetchSession] = useLazyGetSessionQuery()
 
   const leaderboard = session?.data || []
 
@@ -36,6 +44,61 @@ export default function RankingsPage() {
   const podium = useMemo(() => {
     return [...filtered].sort((a, b) => (a.rank || 0) - (b.rank || 0)).slice(0, 3)
   }, [filtered])
+
+  const fetchAllRankingsForExport = useCallback(async (): Promise<RankingExportEntry[]> => {
+    const collected: RankingExportEntry[] = []
+    let currentPage = 1
+    let totalPages = 1
+
+    while (currentPage <= totalPages) {
+      const response = await fetchSession({
+        page: currentPage,
+        limit: 100,
+      }).unwrap()
+
+      collected.push(...(response.data as RankingExportEntry[]))
+      totalPages = response.pagination?.totalPage ?? 1
+      currentPage += 1
+    }
+
+    const q = search.trim().toLowerCase()
+
+    if (!q) return collected
+
+    return collected.filter(
+      (item) =>
+        item?.user?.name?.toLowerCase()?.includes(q) ||
+        item?.user?.nickName?.toLowerCase()?.includes(q),
+    )
+  }, [fetchSession, search])
+
+  const handleExport = async (format: 'excel' | 'pdf') => {
+    setExporting(format)
+
+    try {
+      const entries = await fetchAllRankingsForExport()
+
+      if (entries.length === 0) {
+        toast.error('No rankings to export with the current filters')
+        return
+      }
+
+      if (format === 'excel') {
+        await exportRankingsToExcel(entries)
+      } else {
+        await exportRankingsToPdf(entries)
+      }
+
+      toast.success(`Exported ${entries.length} rankings to ${format.toUpperCase()}`)
+    } catch (err) {
+      toast.error(
+        (err as { data?: { message?: string } })?.data?.message ??
+          'Could not export rankings',
+      )
+    } finally {
+      setExporting(null)
+    }
+  }
 
   if (isLoading) {
     return <Spin className="flex h-screen items-center justify-center" />
@@ -107,17 +170,40 @@ export default function RankingsPage() {
         ))}
       </Row>
 
-      <AnimatedChartCard title="Leaderboard" subtitle="Live ranking">
+      <AnimatedChartCard
+        title="Leaderboard"
+        subtitle="Live ranking"
+        actions={
+          <div className="flex flex-wrap gap-2">
+            <Button
+              icon={<FileExcelOutlined />}
+              loading={exporting === 'excel'}
+              disabled={exporting !== null}
+              className="rounded-[12px] border-dnx-border !text-white hover:!border-dnx-yellow hover:!text-dnx-yellow"
+              onClick={() => handleExport('excel')}
+            >
+              Export Excel
+            </Button>
+
+            <Button
+              icon={<FilePdfOutlined />}
+              loading={exporting === 'pdf'}
+              disabled={exporting !== null}
+              className="rounded-[12px] border-dnx-border !text-white hover:!border-dnx-yellow hover:!text-dnx-yellow"
+              onClick={() => handleExport('pdf')}
+            >
+              Export PDF
+            </Button>
+          </div>
+        }
+      >
         <Table
           rowKey="id"
           dataSource={filtered}
           pagination={{
             current: page,
-
             pageSize: limit,
-
             total: pagination?.total || 0,
-
             onChange: (current) => setPage(current),
           }}
           columns={[
