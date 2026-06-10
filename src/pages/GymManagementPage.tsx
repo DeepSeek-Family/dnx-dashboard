@@ -164,14 +164,17 @@ export default function GymManagementPage() {
           {
             title: 'Country',
             dataIndex: 'country',
+            render: (country: string) => country || '—',
           },
           {
             title: 'City',
             dataIndex: 'city',
+            render: (city: string) => city || '—',
           },
           {
             title: 'State',
             dataIndex: 'state',
+            render: (state: string) => state || '—',
           },
 
           {
