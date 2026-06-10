@@ -1,12 +1,31 @@
+import type { IGym } from '@/types/gymTypes'
+
 import { dnxApi } from '../dnxApi'
+
+export type GymListParams = {
+  page?: number
+  limit?: number
+  searchTerm?: string
+}
+
+export type GymListResponse = {
+  data: IGym[]
+  pagination: {
+    page: number
+    limit: number
+    total: number
+    totalPage: number
+  }
+}
 
 const gymApi = dnxApi.injectEndpoints({
   endpoints: (build) => ({
-    getGyms: build.query({
-      query: () => {
+    getGyms: build.query<GymListResponse, GymListParams>({
+      query: (params) => {
         return {
           url: '/gyms/admin',
           method: 'GET',
+          params,
         }
       },
     }),

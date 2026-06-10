@@ -6,9 +6,22 @@ import {
   PlusOutlined,
 } from '@ant-design/icons'
 
-import { App, Button, Form, Input, Modal, Select, Table, Tag, Typography } from 'antd'
+import {
+  App,
+  Button,
+  Form,
+  Input,
+  Modal,
+  Pagination,
+  Select,
+  Table,
+  Tag,
+  Typography,
+} from 'antd'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+
+import { debounce } from '@/utils/debounce'
 
 import {
   useAddGymMutation,
@@ -19,16 +32,38 @@ import {
 
 import type { IGym } from '@/types/gymTypes'
 
+const SEARCH_DEBOUNCE_MS = 300
+
 export default function GymManagementPage() {
   const { message } = App.useApp()
 
-  const [search, setSearch] = useState('')
+  const [searchInput, setSearchInput] = useState('')
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('')
+  const [listQuery, setListQuery] = useState({ page: 1, limit: 10 })
+
+  const scheduleDebouncedSearch = useMemo(
+    () => debounce((value: string) => setDebouncedSearchTerm(value), SEARCH_DEBOUNCE_MS),
+    [],
+  )
+
+  useEffect(() => {
+    scheduleDebouncedSearch(searchInput)
+  }, [searchInput, scheduleDebouncedSearch])
+
+  useEffect(() => () => scheduleDebouncedSearch.cancel(), [scheduleDebouncedSearch])
+
+  useEffect(() => {
+    setListQuery((q) => ({ ...q, page: 1 }))
+  }, [debouncedSearchTerm])
   const [open, setOpen] = useState(false)
   const [editingGym, setEditingGym] = useState<IGym | null>(null)
 
   const [form] = Form.useForm()
 
-  const { data: gymsResponse, isLoading, refetch } = useGetGymsQuery({})
+  const { data: gymsResponse, isLoading, refetch } = useGetGymsQuery({
+    ...listQuery,
+    searchTerm: debouncedSearchTerm,
+  })
 
   const [addGym, { isLoading: addingGym }] = useAddGymMutation()
 
@@ -42,12 +77,7 @@ export default function GymManagementPage() {
   } | null>(null)
 
   const gyms = gymsResponse?.data ?? []
-
-  const filteredGyms = useMemo(() => {
-    return gyms.filter((gym: IGym) =>
-      `${gym.gymName} ${gym.city}`.toLowerCase().includes(search.toLowerCase()),
-    )
-  }, [gyms, search])
+  const serverPagination = gymsResponse?.pagination
 
   const handleOpenAddModal = () => {
     setEditingGym(null)
@@ -142,20 +172,19 @@ export default function GymManagementPage() {
         <Input.Search
           allowClear
           placeholder="Search gym"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
         />
       </div>
 
-      <Table
-        rowKey="id"
-        loading={isLoading}
-        dataSource={filteredGyms}
-        pagination={{
-          pageSize: 10,
-        }}
-        className="[&_.ant-table]:!bg-transparent"
-        columns={[
+      <div className="glass-card overflow-x-auto rounded-[20px] border border-dnx-border/80">
+        <Table
+          rowKey="id"
+          loading={isLoading}
+          dataSource={gyms}
+          pagination={false}
+          className="[&_.ant-table]:!bg-transparent"
+          columns={[
           {
             title: 'Gym Name',
             dataIndex: 'gymName',
@@ -245,7 +274,28 @@ export default function GymManagementPage() {
             ),
           },
         ]}
-      />
+        />
+      </div>
+
+      <div className="glass-card flex flex-wrap items-center justify-between gap-3 rounded-[20px] border border-dnx-border/80 p-4">
+        <Typography.Text className="text-dnx-muted">
+          {serverPagination?.total
+            ? `${serverPagination.total} gym${serverPagination.total === 1 ? '' : 's'} total`
+            : '0 gyms total'}
+        </Typography.Text>
+
+        <Pagination
+          current={serverPagination?.page ?? listQuery.page}
+          pageSize={serverPagination?.limit ?? listQuery.limit}
+          total={serverPagination?.total ?? 0}
+          showSizeChanger
+          pageSizeOptions={[10, 20, 50]}
+          showTotal={(total, range) => `${range[0]}-${range[1]} of ${total}`}
+          onChange={(page, pageSize) => {
+            setListQuery({ page, limit: pageSize })
+          }}
+        />
+      </div>
 
       <Modal
         open={open}
