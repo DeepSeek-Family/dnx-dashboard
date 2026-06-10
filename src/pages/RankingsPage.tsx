@@ -103,6 +103,7 @@ export default function RankingsPage() {
   if (isLoading) {
     return <Spin className="flex h-screen items-center justify-center" />
   }
+  // 
 
   return (
     <div className="space-y-6">
