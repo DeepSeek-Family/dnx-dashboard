@@ -145,31 +145,38 @@ export default function RankingsPage() {
 
             {
               title: 'Level',
-
               dataIndex: 'level',
             },
-
             {
               title: 'Steps',
-
               dataIndex: 'totalSteps',
             },
-
             {
               title: 'Workout Days',
-
               dataIndex: 'totalWorkoutDays',
             },
-
+            {
+              title: 'Gym Name',
+              render: (_: any, row: any) => row?.user?.gym?.gymName || '-',
+            },
+            {
+              title: 'City',
+              render: (_: any, row: any) => row?.user?.gym?.city || '-',
+            },
+            {
+              title: 'State',
+              render: (_: any, row: any) => row?.user?.gym?.state || '-',
+            },
+            {
+              title: 'Country',
+              render: (_: any, row: any) => row?.user?.gym?.country || '-',
+            },
             {
               title: 'DNX Score',
-
               render: (_: any, row: any) => row?.totalDNXScore?.toFixed(1) || '0',
             },
-
             {
               title: 'Status',
-
               render: (_: any, _row: any) => <Tag color="green">Active</Tag>,
             },
           ]}

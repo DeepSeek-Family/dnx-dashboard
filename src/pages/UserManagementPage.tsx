@@ -104,7 +104,7 @@ export default function UserManagementPage() {
     } catch (err) {
       toast.error(
         (err as { data?: { message?: string } })?.data?.message ??
-          'Could not export users',
+        'Could not export users',
       )
     } finally {
       setExporting(null)
@@ -121,7 +121,7 @@ export default function UserManagementPage() {
       .catch((err) => {
         toast.error(
           (err as { data?: { message?: string } })?.data?.message ??
-            'Could not update ban status',
+          'Could not update ban status',
         )
       })
   }
@@ -207,23 +207,23 @@ export default function UserManagementPage() {
           pagination={
             !verifiedFilter
               ? {
-                  current: serverPagination?.page ?? listQuery.page,
-                  pageSize: serverPagination?.limit ?? listQuery.limit,
-                  total: serverPagination?.total ?? 0,
-                  showSizeChanger: true,
-                  pageSizeOptions: [10, 20, 50],
-                  showTotal: (total, range) =>
-                    `${range[0]}-${range[1]} of ${total} users`,
-                  onChange: (page, pageSize) => {
-                    setListQuery({ page, limit: pageSize })
-                  },
-                }
+                current: serverPagination?.page ?? listQuery.page,
+                pageSize: serverPagination?.limit ?? listQuery.limit,
+                total: serverPagination?.total ?? 0,
+                showSizeChanger: true,
+                pageSizeOptions: [10, 20, 50],
+                showTotal: (total, range) =>
+                  `${range[0]}-${range[1]} of ${total} users`,
+                onChange: (page, pageSize) => {
+                  setListQuery({ page, limit: pageSize })
+                },
+              }
               : {
-                  pageSize: listQuery.limit,
-                  showSizeChanger: false,
-                  showTotal: (total, range) =>
-                    `${range[0]}-${range[1]} of ${total} (this page)`,
-                }
+                pageSize: listQuery.limit,
+                showSizeChanger: false,
+                showTotal: (total, range) =>
+                  `${range[0]}-${range[1]} of ${total} (this page)`,
+              }
           }
           columns={[
             {
@@ -272,6 +272,13 @@ export default function UserManagementPage() {
               dataIndex: 'role',
               render: (role: string) => (
                 <Tag color={role === 'SUPER_ADMIN' ? 'red' : 'blue'}>{role}</Tag>
+              ),
+            },
+            {
+              title: 'Banned',
+              dataIndex: 'isBanned',
+              render: (isBanned: boolean) => (
+                <Tag color={isBanned ? 'red' : 'green'}>{isBanned ? 'Yes' : 'No'}</Tag>
               ),
             },
 

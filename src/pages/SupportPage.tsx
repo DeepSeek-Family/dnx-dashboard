@@ -214,11 +214,6 @@ export default function SupportPage() {
                       label: 'Mark Resolved',
                       onClick: () => handleUpdateStatus(record?.id, 'RESOLVED'),
                     },
-                    {
-                      key: 'closed',
-                      label: 'Close Ticket',
-                      onClick: () => handleUpdateStatus(record?.id, 'CLOSED'),
-                    },
                   ]
 
                   return (
